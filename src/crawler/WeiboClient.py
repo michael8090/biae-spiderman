@@ -59,6 +59,8 @@ class WeiboClient():
         for (lKey, lValue) in iParams.iteritems():
             lParamString = "%s=%s&" % (lKey, lValue)
             lURL += lParamString
+
+        print(lURL[:-1])
         return lURL[:len(lURL) - 1]
     
     #fetch the API with multiple pages and cursor parameters
@@ -82,7 +84,27 @@ class WeiboClient():
                 except urllib2.HTTPError, e:
                     print ('Page: \n\tError: The server couldn\'t fulfill the request. Error code: %s' % (str(e)))
         elif self.mPagingAPIs[iAPI] == 'page':
-            print 'to be continued...'
+            #print 'to be continued...'
+            iParams['page'] = 1
+            oJsonResult = []
+            while True:
+                lURL = self._getAPICallURL(iAPI, iParams)
+                try:
+                    req = urllib2.Request(lURL)
+                    response = urllib2.urlopen(req)
+                    page = response.read()
+                    response.close()
+                    lJsonResult = json.loads(page)
+                    oJsonResult += lJsonResult[self.mAPIDataFields[iAPI]]
+                    totalNumber = lJsonResult['total_number']
+                    currentPage = iParams['page']
+                    if currentPage*50 >= totalNumber:
+                        return oJsonResult
+                    iParams['page'] = currentPage+1
+                except urllib2.HTTPError, e:
+                    print ('Page: \n\tError: The server couldn\'t fulfill the request. Error code: %s' % (str(e)))
+
+
         return {'error': 'unknown fetch type'}
     
     #fetch the API with single page
