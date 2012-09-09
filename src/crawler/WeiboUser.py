@@ -12,6 +12,10 @@ class WeiboUser(WeiboClient):
             verified, verified_reason, INSERT_TIMESTAMP, LAST_UPDATE_TIMESTAMP) VALUES \
             (%s, '%s', '%s', %s, %s, '%s', '%s', '%s', '%s', '%s', %s, '%s', %s, '%s', \
             current_timestamp, current_timestamp);"
+
+    mCounterSQLStatement = "INSERT INTO UserCounters (idUser, followers_count, friends_count, \
+            statuses_count, INSERT_TIMESTAMP, LAST_UPDATE_TIMESTAMP) VALUES \
+            (%s, %s, %s, %s, current_timestamp, current_timestamp);"
             
     mAPI = 'users/show'
     
@@ -28,15 +32,27 @@ class WeiboUser(WeiboClient):
                     iJsonData['description'], iJsonData['url'], iJsonData["profile_image_url"], iJsonData["domain"], \
                     (iJsonData["gender"].find('f') == -1), iJsonData["avatar_large"], iJsonData["verified"], \
                     iJsonData['verified_reason'])
+        lCounterSQLStatement = self.mCounterSQLStatement % (iJsonData['id'], iJsonData['followers_count'], \
+                                                            iJsonData['friends_count'], iJsonData['statuses_count'])
         try:
             conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
             cursor = conn.cursor()
-            cursor.execute(lSQLStatement) 
+            cursor.execute(lSQLStatement)
             cursor.close()
             conn.commit()
             conn.close()            
         except Exception, e:
-            print 'Error when insert WeiboUser into Database for uid = %s because of: %s' % (self.mUid, e) 
+            print 'Error when insert WeiboUser into Database for uid = %s because of: %s' % (self.mUid, e)
+
+        try:
+            conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
+            cursor = conn.cursor()
+            cursor.execute(lCounterSQLStatement)
+            cursor.close()
+            conn.commit()
+            conn.close()            
+        except Exception, e:
+            print 'Error when insert UserCounters into Database for uid = %s because of: %s' % (self.mUid, e)
     
     #fetch from Weibo and call sendToDB
     def process(self):
