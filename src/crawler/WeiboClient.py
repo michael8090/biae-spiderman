@@ -93,6 +93,7 @@ class WeiboClient():
                     req = urllib2.Request(lURL)
                     response = urllib2.urlopen(req)
                     page = response.read()
+                    #print(page)
                     response.close()
                     lJsonResult = json.loads(page)
                     oJsonResult += lJsonResult[self.mAPIDataFields[iAPI]]
