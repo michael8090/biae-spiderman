@@ -1,0 +1,66 @@
+'''Tag's methods
+'''
+import MySQLdb
+import types
+from WeiboClient import WeiboClient
+from conf import *
+from PublicToken import PublicToken
+
+class Tag(WeiboClient):
+    mSQLStatement = "INSERT INTO Tag (idUser, tagId, tag, weight, \
+            INSERT_TIMESTAMP, LAST_UPDATE_TIMESTAMP) VALUES %s" \
+    mSQLValueStatement = "(%s, %s, '%s', %s, current_timestamp, current_timestamp),"
+                
+    mAPI = 'tags/tags_batch'
+    
+    def __init__(self):
+        WeiboClient.__init__(self, PublicToken.getPublicToken()[0])
+    
+    #send json data to database
+    def _sendToDB(self, iJsonData):
+        assert(type(iJsonData) == types.ListType)
+        lValueStatement = ""
+        for lUser in iJsonData:
+            for lTag in lUser['tags']:
+                for k, v in lTag.items():
+                    if k != "weight":
+                        lValueStatement += (self.mSQLValueStatement % (lUser['id'], k, v, lTag['weight']))
+        lSQLStatement = self.mSQLStatement % lValueStatement[:len(lValueStatement) - 1]
+
+        try:
+            conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
+            cursor = conn.cursor()
+            cursor.execute(lSQLStatement) 
+            cursor.close()
+            conn.commit()
+            conn.close()
+        except Exception, e:
+            print 'Error when insert WeiboFollower into Database for uid = %s because of: %s' % (self.mUid, e)
+
+    #fetch VUserId from database
+    def _fetchFromDB(self):
+        mSQLFetchVUserId = "SELECT idUser from WeiboUser where verified = TRUE;"
+        try:
+            conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
+            cursor = conn.cursor()
+            cursor.execute(mSQLFetchVUserId) 
+            result = cursor.fetchall()
+            cursor.close()
+            conn.commit()
+            conn.close()
+        except Exception, e:
+            print 'Error when load public token from Database for team %s because of: %s' % (gTeamID, e) 
+        return result;
+    
+    #fetch from Weibo and call sendToDB
+    def process(self):
+        lUids = self._fetchFromDB()
+        #for i = 0; (i+1) * 20 < len(lUids); i++
+            mUids = ",".join(lUids[i*20:(i+1)*20])
+            iParams = {}
+            iParams['uids'] = mUids
+            #mPublicToken is a list:['uid', 'access_token']
+            iParams['access_token'] = self.mPublicToken[1]
+            lJsonResult = self.fetchUsingAPI(self.mAPI, iParams)
+            if type(lJsonResult) == types.ListType and len(lJsonResult) > 0:
+                self._sendToDB(lJsonResult)
