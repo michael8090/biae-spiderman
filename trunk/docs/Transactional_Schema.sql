@@ -66,6 +66,33 @@ CREATE TABLE StatusComment(
 	PRIMARY KEY (idComment, idCommented_Status)
 );
 
+
+CREATE TABLE Repost(
+	repost_id BIGINT NOT NULL,
+	retweeted_status_id BIGINT NOT NULL,
+	user_id BIGINT NOT NULL,
+	created_time TIMESTAMP DEFAULT 0,
+	text VARCHAR(4096) NOT NULL,
+	source VARCHAR(512) NOT NULL,
+	favorited TINYINT NOT NULL,	
+	truncated TINYINT NOT NULL,
+	in_reply_to_status_id BIGINT NOT NULL DEFAULT 0,
+	in_reply_to_screen_name VARCHAR(512) NOT NULL DEFAULT '',
+	mid BIGINT NOT NULL,
+	reposts_count INT NOT NULL, 
+	comments_count INT NOT NULL,
+	INSERT_TIMESTAMP TIMESTAMP DEFAULT 0,
+	LAST_UPDATE_TIMESTAMP TIMESTAMP
+		DEFAULT CURRENT_TIMESTAMP
+		ON UPDATE CURRENT_TIMESTAMP,
+
+	PRIMARY KEY (repost_id),
+	INDEX (retweeted_status_id)
+);
+
+
+
+
 -- the relationship table presents the relationship between user pairs, 
 -- for <A, B>, if A follows B, that makes A B's follower and B A's friend, we then should insert a pair <B, A>
 CREATE TABLE Relationships (
