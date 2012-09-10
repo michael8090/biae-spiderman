@@ -4,14 +4,17 @@
 
 ﻿看了下，目前大概需要8张表：
 (EUser = Enterprise User)
+//EUser
 User
-UserTag
+EUser_Counters (趋势：粉丝数)
+VUserTag
+
 Friendship
 Status
+EUserStatus_Counters (趋势：状态被转发、评论次数)
+
 Comment (用于分析那些用户进行了评论)
 Repost (用于分析那些用户进行了转发)
-EUser_Counters (趋势：粉丝数)
-EUserStatus_Counters (趋势：状态被转发、评论次数)
 
 相关API:
 users/show 用户profile (及粉丝数、关注数)
