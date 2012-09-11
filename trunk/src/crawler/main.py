@@ -5,6 +5,7 @@ from WeiboFollower import WeiboFollower
 from Status import Status
 from EUser import EUser
 from conf import *
+from Followers import Followers
 
 if __name__ == '__main__':
 
@@ -30,5 +31,5 @@ if __name__ == '__main__':
     
     #for each WeiboUser ID, crawl its Status:
     for lUserID in gUsersVec:
-        Status(lUserID).process()
+        Followers(lUserID).process()
 
