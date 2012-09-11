@@ -2,6 +2,7 @@
 '''
 import MySQLdb
 import types
+import math
 from WeiboClient import WeiboClient
 from conf import *
 from PublicToken import PublicToken
@@ -55,7 +56,7 @@ class Tag(WeiboClient):
     #fetch from Weibo and call sendToDB
     def process(self):
         lUids = self._fetchFromDB()
-        #for i = 0; (i+1) * 20 < len(lUids); i++
+        for i in range( int(math.ceil(len(lUids)/20.0) )
             mUids = ",".join(lUids[i*20:(i+1)*20])
             iParams = {}
             iParams['uids'] = mUids
