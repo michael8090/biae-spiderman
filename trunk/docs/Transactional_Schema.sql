@@ -1,10 +1,10 @@
-CREATE TABLE EUser (
+ï»¿CREATE TABLE EUser (
 	idUser BIGINT NOT NULL,
 	screen_name varchar(512) NULL,
 	primary key(idUser)
 );
 
-INSERT INTO `EUser` (`idUser`, `screen_name`) VALUES (2202387347, "Ğ¡Ã×ÊÖ»ú"), (2798510462, "360ÓÃ»§ÌØ¹©»ú"), (2202847500, "HTC_China"), (1645915085, "Ä¦ÍĞÂŞÀ­"), (1660811367, "Åµ»ùÑÇ");
+INSERT INTO `EUser` (`idUser`, `screen_name`) VALUES (2202387347, "å°ç±³æ‰‹æœº"), (2798510462, "360ç”¨æˆ·ç‰¹ä¾›æœº"), (2202847500, "HTC_China"), (1645915085, "æ‘©æ‰˜ç½—æ‹‰"), (1660811367, "è¯ºåŸºäºš");
 	
 CREATE TABLE WeiboUser (
 	idUser BIGINT NOT NULL,
