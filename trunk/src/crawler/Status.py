@@ -6,7 +6,6 @@ import types
 from WeiboClient import WeiboClient
 from conf import *
 from PublicToken import PublicToken
-import re
 
 def getNULL(s):
     if s=='':
@@ -20,9 +19,15 @@ class Status(WeiboClient):
                 source, is_favorited,is_truncated,\
                 in_reply_to_status_id,in_reply_to_user_id,in_reply_to_screen_name,\
                 mid,reposts_count,comments_count,\
-                id_user,INSERT_TIMESTAMP,LAST_UPDATE_TIMESTAMP) \
-                VALUES %s;"
-    mSQLValueStatement = "(%s,'%s','%s','%s',%s,%s,%s,%s,%s,%s,%s,%s,%s,current_timestamp,current_timestamp),"
+                id_user,INSERT_TIMESTAMP) \
+                VALUES %s ON DUPLICATE KEY UPDATE \
+                is_favorited=Values(is_favorited), is_truncated=Values(is_truncated), \
+                reposts_count=Values(reposts_count), comments_count=Values(comments_count);\
+                INSERT INTO Status_Counter \
+                (id_status,reposts_count,comments_count,INSERT_TIMESTAMP) \
+                values %s;"
+    mSQLValueStatement = "(%s,'%s','%s','%s',%s,%s,%s,%s,%s,%s,%s,%s,%s,current_timestamp),"
+    mSQLValue_Status_Counter = "(%s,%s,%s,current_timestamp),"
                 
     mAPI = 'statuses/user_timeline'
     
@@ -34,14 +39,17 @@ class Status(WeiboClient):
     def _sendToDB(self, iJsonData):
         assert(type(iJsonData) == types.ListType)
         lValueStatement = ""
+        lValueStatement2 = ""
         for lInterator in iJsonData:
             lValueStatement += (self.mSQLValueStatement % 
-                                (lInterator['id'],lInterator['created_at'],lInterator['text'],\
-                                lInterator['source'],lInterator['favorited'],lInterator['truncated'],\
+                                (lInterator['id'],MySQLdb.escape_string(lInterator['created_at']),MySQLdb.escape_string(lInterator['text']),\
+                                MySQLdb.escape_string(lInterator['source']),lInterator['favorited'],lInterator['truncated'],\
                                 getNULL(lInterator['in_reply_to_status_id']),getNULL(lInterator['in_reply_to_user_id']),getNULL(lInterator['in_reply_to_screen_name']),\
                                 lInterator['mid'],lInterator['reposts_count'],lInterator['comments_count'],\
                                 lInterator['user']['id']))
-            lSQLStatement = self.mSQLStatement % lValueStatement[:len(lValueStatement) - 1]
+            lValueStatement2 += (self.mSQLValue_Status_Counter %
+                                 (lInterator['id'],lInterator['reposts_count'],lInterator['comments_count']))
+            lSQLStatement = self.mSQLStatement % (lValueStatement[:len(lValueStatement) - 1],lValueStatement2[:-1])
     
         #lSQLStatement = MySQLdb.escape_string(lSQLStatement.encode('utf8','ignore'))
         print(lSQLStatement)
