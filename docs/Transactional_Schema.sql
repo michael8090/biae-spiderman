@@ -58,23 +58,25 @@ CREATE TABLE Status(
 	PRIMARY KEY (idStatus)
 );
 
-CREATE TABLE StatusComment(
-	idComment BIGINT NOT NULL,
-	mid BIGINT NOT NULL,
-	idCommenting_User BIGINT NOT NULL,
-	idCommented_Status BIGINT NOT NULL,
-	message varchar(4096) NOT NULL,
-	source varchar(512) NOT NULL,
-	idReply_To_Comment BIGINT DEFAULT NULL,  -- could be null, depending on whether the comment is a reply to some previous comment
+CREATE TABLE status_comment(
+	comment_id BIGINT NOT NULL,
+	commented_status_id BIGINT NOT NULL,
 	created_time TIMESTAMP DEFAULT 0,
+	`text` varchar(4096) NOT NULL,
+	source varchar(512) NOT NULL,
+	mid BIGINT NOT NULL,
+	user_id BIGINT NOT NULL,
+	replied_to_comment_id BIGINT NOT NULL,
 	INSERT_TIMESTAMP TIMESTAMP DEFAULT 0,
-	LAST_UPDATE_TIMESTAMP TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                  ON UPDATE CURRENT_TIMESTAMP,
-	PRIMARY KEY (idComment, idCommented_Status)
+	LAST_UPDATE_TIMESTAMP TIMESTAMP
+		DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+	PRIMARY KEY (comment_id), 
+	INDEX (commented_status_id)
 );
 
 
-CREATE TABLE Repost(
+CREATE TABLE repost(
 	repost_id BIGINT NOT NULL,
 	retweeted_status_id BIGINT NOT NULL,
 	user_id BIGINT NOT NULL,
