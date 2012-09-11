@@ -1,3 +1,10 @@
+CREATE TABLE EUser (
+	idUser BIGINT NOT NULL,
+	screen_name varchar(512) NULL,
+	primary key(idUser)
+);
+
+INSERT INTO `EUser` (`idUser`, `screen_name`) VALUES (2202387347, "小米手机"), (2798510462, "360用户特供机"), (2202847500, "HTC_China"), (1645915085, "摩托罗拉"), (1660811367, "诺基亚");
 	
 CREATE TABLE WeiboUser (
 	idUser BIGINT NOT NULL,

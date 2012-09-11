@@ -3,9 +3,15 @@
 from WeiboUser import WeiboUser
 from WeiboFollower import WeiboFollower
 from Status import Status
+from EUser import EUser
 from conf import *
 
 if __name__ == '__main__':
+
+    #get EUser Ids
+    EUserIds = EUser.getEUserIds()
+    print EUserIds
+
     #for each WeiboUser ID, crawl its Profile:
 ##    for lUserID in gUsersVec:
 ##        try:
@@ -23,8 +29,8 @@ if __name__ == '__main__':
 ##            print ("Error: Cannot crawl data for Weibo User ID=%s because of: %s" % (lUserID, str(e)))
     
     #for each WeiboUser ID, crawl its Status:
-    for lUserID in gUsersVec:
-        try:
-            Status(lUserID).process()
-        except Exception, e:
-            print ("Error: Cannot crawl data for Weibo User ID=%s because of: %s" % (lUserID, str(e)))
+#    for lUserID in gUsersVec:
+#        try:
+#            Status(lUserID).process()
+#        except Exception, e:
+#            print ("Error: Cannot crawl data for Weibo User ID=%s because of: %s" % (lUserID, str(e)))
