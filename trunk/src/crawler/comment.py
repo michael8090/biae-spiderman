@@ -8,12 +8,12 @@ import util
 from util import parse_weibo_time_string, parse_long
 
 
-class WeiboRepost:
+class WeiboComment:
     SQL_TEMPLATE = """
 INSERT INTO status_comment (comment_id, commented_status_id, user_id, created_time, 
     `text`, source, mid, replied_to_comment_id, INSERT_TIMESTAMP)
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, NULL)
-ON DUPLICATE KEY UPDATE;
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL)
+ON DUPLICATE KEY UPDATE comment_id = comment_id;
 """.strip()
 
     API = 'comments/show'
@@ -39,22 +39,22 @@ ON DUPLICATE KEY UPDATE;
             self._sendToDB(j_result)
    
     #send json data to database
-    def _sendToDB(self, j_reposts):
-        assert(type(j_reposts) == types.ListType)
+    def _sendToDB(self, j_comments):
+        assert(type(j_comments) == types.ListType)
 
-        status_id = j_reposts[0]['retweeted_status']['id']
+        status_id = j_comments[0]['status']['id']
 
         rows = []
-        for jRepost in j_reposts:
-            if not jRepost.has_key('user'):
-                print '>< user N/A for status %d repost %d' % (status_id, jRepost['id'])
+        for jComment in j_comments:
+            if not jComment.has_key('user'):
+                print '>< user N/A for status %d repost %d' % (status_id, jComment['id'])
                 continue
 
-            if not jRepost.has_key('retweeted_status'):
-                print '>< orgin N/A for status %d repost %d' % (status_id, jRepost['id'])
+            if not jComment.has_key('status'):
+                print '>< orgin N/A for status %d repost %d' % (status_id, jComment['id'])
                 continue
             
-            rows.append(self._mapRow(jRepost))
+            rows.append(self._mapRow(jComment))
 
         try:
             conn = util.get_crawler_connection()
@@ -70,17 +70,18 @@ ON DUPLICATE KEY UPDATE;
 
     @staticmethod
     def _mapRow(o):
-        return (o['id'], o['reply_status']['id'], o['user']['id'],
+        
+        reply_comment = o.get('reply_comment')
+        reply_comment_id = reply_comment['id'] if not reply_comment is None else 0
+        
+        return (o['id'], o['status']['id'], o['user']['id'],
                  parse_weibo_time_string(o['created_at']), 
-                 o['text'], o['source'], o['favorited'], o['truncated'],
-                 parse_long(o['in_reply_to_status_id'], 0),
-                 o['in_reply_to_screen_name'],
-                 parse_long(o['mid']), o['reposts_count'], o['comments_count']
+                 o['text'], o['source'], 
+                 parse_long(o['mid']), reply_comment_id
                  )        
-    
 
 
 if __name__ == '__main__':
-    crawler = WeiboRepost(11142488790L)
+    crawler = WeiboComment(11142488790L)
     crawler.process()
 
