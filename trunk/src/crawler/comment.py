@@ -1,4 +1,4 @@
-'''Reposts crawl
+'''Comment Crawl
 '''
 import types
 
@@ -10,18 +10,13 @@ from util import parse_weibo_time_string, parse_long
 
 class WeiboRepost:
     SQL_TEMPLATE = """
-INSERT INTO repost (repost_id, retweeted_status_id, user_id, created_time, 
-    text, source, favorited, truncated, in_reply_to_status_id,
-    in_reply_to_screen_name, mid, reposts_count, comments_count, 
-    INSERT_TIMESTAMP)
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NULL)
-ON DUPLICATE KEY UPDATE
-    favorited = VALUES(favorited), truncated = VALUES(truncated),
-    reposts_count = VALUES(reposts_count),
-    comments_count = VALUES(comments_count);
+INSERT INTO status_comment (comment_id, commented_status_id, user_id, created_time, 
+    `text`, source, mid, replied_to_comment_id, INSERT_TIMESTAMP)
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, NULL)
+ON DUPLICATE KEY UPDATE;
 """.strip()
 
-    API = 'statuses/repost_timeline'
+    API = 'comments/show'
     PAGE_SIZE = 200
     
     def __init__(self, status_id):
@@ -75,8 +70,7 @@ ON DUPLICATE KEY UPDATE
 
     @staticmethod
     def _mapRow(o):
-        assert o.has_key('retweeted_status')
-        return (o['id'], o['retweeted_status']['id'], o['user']['id'],
+        return (o['id'], o['reply_status']['id'], o['user']['id'],
                  parse_weibo_time_string(o['created_at']), 
                  o['text'], o['source'], o['favorited'], o['truncated'],
                  parse_long(o['in_reply_to_status_id'], 0),

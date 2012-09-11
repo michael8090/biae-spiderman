@@ -25,15 +25,15 @@ class WeiboUser(WeiboClient):
         WeiboClient.__init__(self, PublicToken.getPublicToken()[0])
     
     #send json data to database
-    def _sendToDB(self, iJsonData):
-        assert(type(iJsonData) == types.DictType)
-        lSQLStatement = self.mSQLStatement % (iJsonData['id'], iJsonData['screen_name'], iJsonData['name'], \
-                    iJsonData['province'], iJsonData['city'], iJsonData["location"], \
-                    iJsonData['description'], iJsonData['url'], iJsonData["profile_image_url"], iJsonData["domain"], \
-                    (iJsonData["gender"].find('f') == -1), iJsonData["avatar_large"], iJsonData["verified"], \
-                    iJsonData['verified_reason'])
-        lCounterSQLStatement = self.mCounterSQLStatement % (iJsonData['id'], iJsonData['followers_count'], \
-                                                            iJsonData['friends_count'], iJsonData['statuses_count'])
+    def _sendToDB(self, j_reposts):
+        assert(type(j_reposts) == types.DictType)
+        lSQLStatement = self.mSQLStatement % (j_reposts['id'], j_reposts['screen_name'], j_reposts['name'], \
+                    j_reposts['province'], j_reposts['city'], j_reposts["location"], \
+                    j_reposts['description'], j_reposts['url'], j_reposts["profile_image_url"], j_reposts["domain"], \
+                    (j_reposts["gender"].find('f') == -1), j_reposts["avatar_large"], j_reposts["verified"], \
+                    j_reposts['verified_reason'])
+        lCounterSQLStatement = self.mCounterSQLStatement % (j_reposts['id'], j_reposts['followers_count'], \
+                                                            j_reposts['friends_count'], j_reposts['statuses_count'])
         try:
             conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
             cursor = conn.cursor()
