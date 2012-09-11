@@ -9,7 +9,7 @@ CREATE TABLE Status(
 	in_reply_to_status_id BIGINT DEFAULT NULL,
 	in_reply_to_user_id BIGINT DEFAULT NULL,
 	in_reply_to_screen_name varchar(512) NULL DEFAULT NULL,
-	mid BIGINT NOT NULL
+	mid BIGINT NOT NULL,
 	reposts_count INT NOT NULL,
 	comments_count INT NOT NULL,
 	id_user BIGINT NOT NULL,
@@ -19,3 +19,13 @@ CREATE TABLE Status(
                   ON UPDATE CURRENT_TIMESTAMP,
 	PRIMARY KEY (id_status)
 );
+
+CREATE TABLE Status_Counter(
+	id_status BIGINT NOT NULL,
+	reposts_count INT NOT NULL,
+	comments_count INT NOT NULL,
+	INSERT_TIMESTAMP TIMESTAMP DEFAULT 0,
+	
+	PRIMARY KEY (id_status,INSERT_TIMESTAMP)
+);
+

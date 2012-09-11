@@ -29,8 +29,6 @@ if __name__ == '__main__':
 ##            print ("Error: Cannot crawl data for Weibo User ID=%s because of: %s" % (lUserID, str(e)))
     
     #for each WeiboUser ID, crawl its Status:
-#    for lUserID in gUsersVec:
-#        try:
-#            Status(lUserID).process()
-#        except Exception, e:
-#            print ("Error: Cannot crawl data for Weibo User ID=%s because of: %s" % (lUserID, str(e)))
+    for lUserID in gUsersVec:
+        Status(lUserID).process()
+
