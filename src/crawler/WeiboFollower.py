@@ -20,10 +20,10 @@ class WeiboFollower(WeiboClient):
         WeiboClient.__init__(self, PublicToken.getPublicToken()[0])
     
     #send json data to database
-    def _sendToDB(self, iJsonData):
-        assert(type(iJsonData) == types.ListType)
+    def _sendToDB(self, j_reposts):
+        assert(type(j_reposts) == types.ListType)
         lValueStatement = ""
-        for lFollower in iJsonData:
+        for lFollower in j_reposts:
             lValueStatement += (self.mSQLValueStatement % (self.mUid, lFollower, 1))
             lSQLStatement = self.mSQLStatement % lValueStatement[:len(lValueStatement) - 1]
 

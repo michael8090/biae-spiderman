@@ -61,11 +61,11 @@ CREATE TABLE Status(
 CREATE TABLE status_comment(
 	comment_id BIGINT NOT NULL,
 	commented_status_id BIGINT NOT NULL,
+	user_id BIGINT NOT NULL,
 	created_time TIMESTAMP DEFAULT 0,
 	`text` varchar(4096) NOT NULL,
 	source varchar(512) NOT NULL,
 	mid BIGINT NOT NULL,
-	user_id BIGINT NOT NULL,
 	replied_to_comment_id BIGINT NOT NULL,
 	INSERT_TIMESTAMP TIMESTAMP DEFAULT 0,
 	LAST_UPDATE_TIMESTAMP TIMESTAMP

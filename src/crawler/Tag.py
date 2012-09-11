@@ -18,10 +18,10 @@ class Tag(WeiboClient):
         WeiboClient.__init__(self, PublicToken.getPublicToken()[0])
     
     #send json data to database
-    def _sendToDB(self, iJsonData):
-        assert(type(iJsonData) == types.ListType)
+    def _sendToDB(self, j_reposts):
+        assert(type(j_reposts) == types.ListType)
         lValueStatement = ""
-        for lUser in iJsonData:
+        for lUser in j_reposts:
             for lTag in lUser['tags']:
                 for k, v in lTag.items():
                     if k != "weight":
