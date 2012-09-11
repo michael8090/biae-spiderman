@@ -4,12 +4,12 @@ import MySQLdb
 import types
 import math
 from WeiboClient import WeiboClient
-from conf import *
 from PublicToken import PublicToken
+from conf import *
 
 class Tag(WeiboClient):
-    mSQLStatement = "INSERT INTO Tag (idUser, tagId, tag, weight, \
-            INSERT_TIMESTAMP, LAST_UPDATE_TIMESTAMP) VALUES %s" \
+    mSQLStatement = "INSERT INTO Tags (idUser, tagId, tag, weight, \
+            INSERT_TIMESTAMP, LAST_UPDATE_TIMESTAMP) VALUES %s"
     mSQLValueStatement = "(%s, %s, '%s', %s, current_timestamp, current_timestamp),"
                 
     mAPI = 'tags/tags_batch'
@@ -36,7 +36,7 @@ class Tag(WeiboClient):
             conn.commit()
             conn.close()
         except Exception, e:
-            print 'Error when insert WeiboFollower into Database for uid = %s because of: %s' % (self.mUid, e)
+            print 'Error when insert Tag into Database because of: %s' % (e, )
 
     #fetch VUserId from database
     def _fetchFromDB(self):
@@ -50,13 +50,16 @@ class Tag(WeiboClient):
             conn.commit()
             conn.close()
         except Exception, e:
-            print 'Error when load public token from Database for team %s because of: %s' % (gTeamID, e) 
-        return result;
+            print 'Error when load VUser ids from Database because of: %s' % (e, )
+        VUserIds = []
+        for VUserId in result:
+            VUserIds.append(str(VUserId[0]))
+        return VUserIds;
     
     #fetch from Weibo and call sendToDB
     def process(self):
         lUids = self._fetchFromDB()
-        for i in range( int(math.ceil(len(lUids)/20.0) )
+        for i in range( int(math.ceil(len(lUids)/20.0)) ):
             mUids = ",".join(lUids[i*20:(i+1)*20])
             iParams = {}
             iParams['uids'] = mUids
