@@ -1,4 +1,4 @@
-'''Followers's methods
+'''FollowersFollowingV's methods
 '''
 import MySQLdb
 import json
@@ -6,7 +6,6 @@ import types
 from WeiboClient import WeiboClient
 from conf import *
 from PublicToken import PublicToken
-from FollowersFollowing import FollowersFollowingV
 
 def getNULL(s):
     if s=='':
@@ -14,13 +13,13 @@ def getNULL(s):
     else:
         return s
 
-class Followers(WeiboClient):
+class FollowersFollowingV(WeiboClient):
     mSQLStatement = "INSERT INTO Followers \
                 (id_user, id_follower, is_ActiveFun) \
                 VALUES %s ON DUPLICATE KEY UPDATE id_user=id_user;"
     mSQLValueStatement = "(%s,%s,%s),"
                 
-    mAPI = 'friendships/followers'
+    mAPI = 'friendships/friends'
     
 # for followers's profile
     mSQLStatement_fp = "INSERT INTO WeiboUser (idUser, screen_name, name, province, city, \
@@ -41,19 +40,16 @@ class Followers(WeiboClient):
         lValueStatement = ""
         lValueStatement_fp = ""
         for lInterator in iJsonData:
-            lValueStatement += (self.mSQLValueStatement % 
-                                (self.mUid,lInterator['id'],0))
-            lValueStatement_fp += (self.mSQLValueStatement_fp % (lInterator['id'], MySQLdb.escape_string(lInterator['screen_name']), MySQLdb.escape_string(lInterator['name']), \
-                        lInterator['province'], lInterator['city'], MySQLdb.escape_string(lInterator["location"]), \
-                        MySQLdb.escape_string(lInterator['description']), MySQLdb.escape_string(lInterator['url']), MySQLdb.escape_string(lInterator["profile_image_url"]), MySQLdb.escape_string(lInterator["domain"]), \
-                        (lInterator["gender"].find('f') == -1), MySQLdb.escape_string(lInterator["avatar_large"]), lInterator["verified"], \
-                        MySQLdb.escape_string(lInterator['verified_reason'])))
-            lSQLStatement = self.mSQLStatement % (lValueStatement[:-1])
-            lSQLStatement_fp = self.mSQLStatement_fp % (lValueStatement_fp[:-1])
-            try:
-                FollowersFollowingV(lInterator['id']).process()
-            except Exception, e:
-                print ("Error: Cannot crawl data for Weibo User ID=%s because of: %s" % (lInterator['id'], str(e)))
+            if(lInterator["verified"]):
+                lValueStatement += (self.mSQLValueStatement % 
+                                    (lInterator['id'],self.mUid,0))
+                lValueStatement_fp += (self.mSQLValueStatement_fp % (lInterator['id'], MySQLdb.escape_string(lInterator['screen_name']), MySQLdb.escape_string(lInterator['name']), \
+                            lInterator['province'], lInterator['city'], MySQLdb.escape_string(lInterator["location"]), \
+                            MySQLdb.escape_string(lInterator['description']), MySQLdb.escape_string(lInterator['url']), MySQLdb.escape_string(lInterator["profile_image_url"]), MySQLdb.escape_string(lInterator["domain"]), \
+                            (lInterator["gender"].find('f') == -1), MySQLdb.escape_string(lInterator["avatar_large"]), lInterator["verified"], \
+                            MySQLdb.escape_string(lInterator['verified_reason'])))
+                lSQLStatement = self.mSQLStatement % (lValueStatement[:-1])
+                lSQLStatement_fp = self.mSQLStatement_fp % (lValueStatement_fp[:-1])
     
         #lSQLStatement = MySQLdb.escape_string(lSQLStatement.encode('utf8','ignore'))
         print(lSQLStatement)
