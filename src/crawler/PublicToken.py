@@ -27,3 +27,5 @@ class PublicToken():
         except Exception, e:
             print 'Error when load public token from Database for team %s because of: %s' % (gTeamID, e) 
         return result;
+
+

@@ -4,7 +4,7 @@ Created on Sep 11, 2012
 @author: yiliu
 '''
 import MySQLdb
-from conf import *
+from crawler.conf import *
 
 
 def parse_weibo_time_string(s):
