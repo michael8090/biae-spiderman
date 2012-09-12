@@ -3,6 +3,7 @@ Created on Sep 12, 2012
 
 @author: hidn
 '''
+import MySQLdb
 
 
 
@@ -14,7 +15,7 @@ class StatusDao:
         conn = self._conn
 
         try:
-            cursor = conn.cursor()
+            cursor = conn.cursor(cursorclass = MySQLdb.cursors.DictCursor)
             cursor.execute(self.SQL_GET_ALL_STATUSES)
 
             rows = cursor.fetchall()
@@ -28,4 +29,4 @@ class StatusDao:
     
     SQL_GET_ALL_STATUSES = '''
 SELECT id_status FROM status ORDER BY id_status
-'''.trim()
+'''.strip()
