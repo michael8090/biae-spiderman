@@ -6,6 +6,7 @@ import types
 from WeiboClient import WeiboClient
 from conf import *
 from PublicToken import PublicToken
+from util import *
 
 def getNULL(s):
     if s=='':
@@ -26,7 +27,7 @@ class Status(WeiboClient):
                 INSERT INTO Status_Counter \
                 (id_status,reposts_count,comments_count,INSERT_TIMESTAMP) \
                 values %s;"
-    mSQLValueStatement = "(%s,'%s','%s','%s',%s,%s,%s,%s,%s,%s,%s,%s,%s,current_timestamp),"
+    mSQLValueStatement = "(%s,%s,'%s','%s',%s,%s,%s,%s,%s,%s,%s,%s,%s,current_timestamp),"
     mSQLValue_Status_Counter = "(%s,%s,%s,current_timestamp),"
                 
     mAPI = 'statuses/user_timeline'
@@ -42,7 +43,7 @@ class Status(WeiboClient):
         lValueStatement2 = ""
         for lInterator in iJsonData:
             lValueStatement += (self.mSQLValueStatement % 
-                                (lInterator['id'],MySQLdb.escape_string(lInterator['created_at']),MySQLdb.escape_string(lInterator['text']),\
+                                (lInterator['id'],parse_weibo_time_string(lInterator['created_at']),MySQLdb.escape_string(lInterator['text']),\
                                 MySQLdb.escape_string(lInterator['source']),lInterator['favorited'],lInterator['truncated'],\
                                 getNULL(lInterator['in_reply_to_status_id']),getNULL(lInterator['in_reply_to_user_id']),getNULL(lInterator['in_reply_to_screen_name']),\
                                 lInterator['mid'],lInterator['reposts_count'],lInterator['comments_count'],\
