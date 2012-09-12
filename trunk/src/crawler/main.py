@@ -1,10 +1,11 @@
 #! -*- coding: utf-8 -*-
 
 from WeiboUser import WeiboUser
-from WeiboFollower import WeiboFollower
-from Status import Status
+#from WeiboFollower import WeiboFollower
+#from Status import Status
 from EUser import EUser
 from Tag import Tag
+from ActiveFollower import ActiveFollower
 from conf import *
 
 if __name__ == '__main__':
@@ -15,11 +16,16 @@ if __name__ == '__main__':
 
     #for each WeiboUser ID, crawl its Profile:
     for EUserId in EUserIds:
-        try:
+        #try:
             weiboUser = WeiboUser(EUserId)
             weiboUser.process()
-        except Exception, e:
-            print ("Error: Cannot crawl data for EUser ID=%s because of: %s" % (EUserId, str(e)))
+#        except Exception, e:
+#            print ("Error: Cannot crawl data for EUser ID=%s because of: %s" % (EUserId, str(e)))
+
+#        try:
+            ActiveFollower(EUserId).process()
+ #       except Exception, e:
+#            print ("Error: Cannot crawl ActiveFollower for EUser ID=%s because of: %s" % (EUserId, str(e)))
 
     try:
         Tag().process()
