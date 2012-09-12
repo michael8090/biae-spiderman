@@ -20,6 +20,7 @@ class FollowersFollowingV(WeiboClient):
     mSQLValueStatement = "(%s,%s,%s,current_timestamp),"
                 
     mAPI = 'friendships/friends'
+    isActive = 0
     
 # for followers's profile
     mSQLStatement_fp = "INSERT INTO WeiboUser (idUser, screen_name, name, province, city, \
@@ -30,8 +31,9 @@ class FollowersFollowingV(WeiboClient):
             current_timestamp, current_timestamp),"
 
     
-    def __init__(self, iUid):
+    def __init__(self, iUid,isActive):
         self.mUid = iUid
+        self.isActive = isActive
         WeiboClient.__init__(self, PublicToken.getPublicToken()[0])
     
     #send json data to database
@@ -42,7 +44,7 @@ class FollowersFollowingV(WeiboClient):
         for lInterator in iJsonData:
             if(lInterator["verified"]):
                 lValueStatement += (self.mSQLValueStatement % 
-                                    (lInterator['id'],self.mUid,0))
+                                    (lInterator['id'],self.mUid,self.isActive))
                 lValueStatement_fp += (self.mSQLValueStatement_fp % (lInterator['id'], MySQLdb.escape_string(lInterator['screen_name']), MySQLdb.escape_string(lInterator['name']), \
                             lInterator['province'], lInterator['city'], MySQLdb.escape_string(lInterator["location"]), \
                             MySQLdb.escape_string(lInterator['description']), MySQLdb.escape_string(lInterator['url']), MySQLdb.escape_string(lInterator["profile_image_url"]), MySQLdb.escape_string(lInterator["domain"]), \

@@ -50,10 +50,10 @@ class Followers(WeiboClient):
                         MySQLdb.escape_string(lInterator['verified_reason'])))
             lSQLStatement = self.mSQLStatement % (lValueStatement[:-1])
             lSQLStatement_fp = self.mSQLStatement_fp % (lValueStatement_fp[:-1])
-            try:
-                FollowersFollowingV(lInterator['id']).process()
-            except Exception, e:
-                print ("Error: Cannot crawl data for Weibo User ID=%s because of: %s" % (lInterator['id'], str(e)))
+#            try:
+#                FollowersFollowingV(lInterator['id']).process()
+#            except Exception, e:
+#                print ("Error: Cannot crawl data for Weibo User ID=%s because of: %s" % (lInterator['id'], str(e)))
     
         #lSQLStatement = MySQLdb.escape_string(lSQLStatement.encode('utf8','ignore'))
         print("SQLStatment:%s"%lSQLStatement)
