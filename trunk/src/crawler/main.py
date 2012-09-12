@@ -16,16 +16,16 @@ if __name__ == '__main__':
 
     #for each WeiboUser ID, crawl its Profile:
     for EUserId in EUserIds:
-        #try:
+        try:
             weiboUser = WeiboUser(EUserId)
             weiboUser.process()
-#        except Exception, e:
-#            print ("Error: Cannot crawl data for EUser ID=%s because of: %s" % (EUserId, str(e)))
+        except Exception, e:
+            print ("Error: Cannot crawl data for EUser ID=%s because of: %s" % (EUserId, str(e)))
 
-#        try:
+        try:
             ActiveFollower(EUserId).process()
- #       except Exception, e:
-#            print ("Error: Cannot crawl ActiveFollower for EUser ID=%s because of: %s" % (EUserId, str(e)))
+        except Exception, e:
+            print ("Error: Cannot crawl ActiveFollower for EUser ID=%s because of: %s" % (EUserId, str(e)))
 
     try:
         Tag().process()

@@ -1,19 +1,16 @@
 '''ActiveFollower's methods
 '''
-import MySQLdb
 import types
-from WeiboClient import WeiboClient
+import MySQLdb
+
 from conf import *
 from PublicToken import PublicToken
+from WeiboClient import WeiboClient
+from dao.user import UserDao
 
 class ActiveFollower(WeiboClient):
-    mSQLStatement = "INSERT INTO WeiboUser (idUser, screen_name, name, province, city, \
-            location, description, url, profile_image, domain, gender, avatar_large, \
-            verified, verified_reason, INSERT_TIMESTAMP, LAST_UPDATE_TIMESTAMP) VALUES \
-            (%s, '%s', '%s', %s, %s, '%s', '%s', '%s', '%s', '%s', %s, '%s', %s, '%s', \
-            current_timestamp, current_timestamp);"
 
-    updateRelationshipSQL = "INSERT INTO Followers (id_user, id_follower, is_ActiveFun) VALUES \
+    iRelationshipSQLTemplate = "INSERT INTO Followers (id_user, id_follower, is_ActiveFun) VALUES \
             (%s, %s, TRUE) ON DUPLICATE KEY UPDATE is_ActiveFun=TRUE;"
             
     mAPI = 'friendships/followers/active'
@@ -24,34 +21,29 @@ class ActiveFollower(WeiboClient):
         WeiboClient.__init__(self, PublicToken.getPublicToken()[0])
     
     #send json data to database
-    def _sendToDB(self, j_reposts):
-        assert(type(j_reposts) == types.DictType)
-        for activeUser in j_reposts['users']:
-            lSQLStatement = self.mSQLStatement % (activeUser['id'], activeUser['screen_name'], activeUser['name'], \
-                    activeUser['province'], activeUser['city'], activeUser["location"], \
-                    activeUser['description'], activeUser['url'], activeUser["profile_image_url"], activeUser["domain"], \
-                    (activeUser["gender"].find('f') == -1), activeUser["avatar_large"], activeUser["verified"], \
-                    activeUser['verified_reason'])
-            lupdateRelationshipSQL = self.updateRelationshipSQL % (self.mUid, activeUser['id'])
+    def _sendToDB(self, jActiveUsers):
+        assert(type(jActiveUsers) == types.DictType)
+        
+        try:
+            conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
+            dao = UserDao(conn)
+            dao.insert_users(jActiveUsers['users'])
+            conn.close()
+        except Exception, e:
+            print 'Error when insert active user into Database because of: %s' % (e, )
+                
+        for activeUser in jActiveUsers['users']:
+            iRelationshipSQL = self.iRelationshipSQLTemplate % (self.mUid, activeUser['id'])
+            
             try:
                 conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
                 cursor = conn.cursor()
-                cursor.execute(lSQLStatement)
+                cursor.execute(iRelationshipSQL)
                 cursor.close()
                 conn.commit()
                 conn.close()
             except Exception, e:
-                print 'Error when insert active user into Database for uid = %s because of: %s' % (self.mUid, e)
-
-            try:
-                conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
-                cursor = conn.cursor()
-                cursor.execute(lupdateRelationshipSQL)
-                cursor.close()
-                conn.commit()
-                conn.close()
-            except Exception, e:
-                print 'Error when insert active user relationship into Database for uid = %s because of: %s' % (self.mUid, e)
+                print 'Error when insert active user relationship into Database because of: %s' % (e, )
     
     #fetch from Weibo and call sendToDB
     def process(self):
