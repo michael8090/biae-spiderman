@@ -12,7 +12,7 @@ class WeiboComment:
     SQL_TEMPLATE = """
 INSERT INTO status_comment (comment_id, commented_status_id, user_id, created_time, 
     `text`, source, mid, replied_to_comment_id, INSERT_TIMESTAMP)
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL)
+VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %s, %s, %s, NULL)
 ON DUPLICATE KEY UPDATE comment_id = comment_id;
 """.strip()
 
