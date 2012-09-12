@@ -6,6 +6,8 @@ Created on Sep 11, 2012
 import MySQLdb
 from dateutil import parser
 from calendar import timegm
+from crawler.WeiboClient import WeiboClient
+from crawler.PublicToken import PublicToken
 
 
 from crawler.conf import *
@@ -24,6 +26,8 @@ def get_crawler_connection():
                                    user=gDBUser, passwd=gDBPassword,
                                    db=gDBSchema, charset="utf8")
 
+def get_weibo_client():
+    return WeiboClient(PublicToken.getPublicToken()[0])
 
 if __name__ == '__main__':
     print parse_weibo_time_string('Wed Sep 12 16:23:00 +0800 2012')

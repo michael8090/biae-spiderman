@@ -2,8 +2,6 @@
 '''
 import types
 
-from WeiboClient import WeiboClient
-from PublicToken import PublicToken
 from dao.repost import RepostDao
 import util
 
@@ -15,7 +13,7 @@ class WeiboRepostAPI:
     def __init__(self, client):
         self._client = client
     
-    def fetch(self, status_id):
+    def get_reposts_of_status(self, status_id):
         api_params = {
                      'id' : status_id,
                      #mPublicToken is a list:['uid', 'access_token']
@@ -28,9 +26,9 @@ class WeiboRepostAPI:
 
 
 if __name__ == '__main__':
-    client = WeiboClient(PublicToken.getPublicToken()[0])
+    client = util.get_weibo_client()
     crawler = WeiboRepostAPI(client)
-    j_reposts = crawler.fetch(11142488790L)
+    j_reposts = crawler.get_reposts_of_status(11142488790L)
     
     try:
         conn = util.get_crawler_connection()

@@ -9,17 +9,6 @@ import types
 from util import parse_weibo_time_string, parse_long
 
 class RepostDao:
-    SQL_TEMPLATE = '''
-INSERT INTO repost (repost_id, retweeted_status_id, user_id, created_time, 
-    text, source, favorited, truncated, in_reply_to_status_id,
-    in_reply_to_screen_name, mid, reposts_count, comments_count, 
-    INSERT_TIMESTAMP)
-VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %s, %s, %s, %s, %s, %s, %s, %s, NULL)
-ON DUPLICATE KEY UPDATE
-    favorited = VALUES(favorited), truncated = VALUES(truncated),
-    reposts_count = VALUES(reposts_count),
-    comments_count = VALUES(comments_count);
-'''.strip()
     
     def __init__(self, conn):
         self._conn = conn;
@@ -44,7 +33,7 @@ ON DUPLICATE KEY UPDATE
         try:
             conn = self._conn
             cursor = conn.cursor()
-            cursor.executemany(self.SQL_TEMPLATE, rows)
+            cursor.executemany(self.SQL_INSERT_REPOSTS, rows)
             cursor.close()
             conn.commit()
         except Exception, e:
@@ -63,4 +52,15 @@ ON DUPLICATE KEY UPDATE
                  )        
     
         
+    SQL_INSERT_REPOSTS = '''
+INSERT INTO repost (repost_id, retweeted_status_id, user_id, created_time, 
+    text, source, favorited, truncated, in_reply_to_status_id,
+    in_reply_to_screen_name, mid, reposts_count, comments_count, 
+    INSERT_TIMESTAMP)
+VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %s, %s, %s, %s, %s, %s, %s, %s, NULL)
+ON DUPLICATE KEY UPDATE
+    favorited = VALUES(favorited), truncated = VALUES(truncated),
+    reposts_count = VALUES(reposts_count),
+    comments_count = VALUES(comments_count);
+'''.strip()
         
