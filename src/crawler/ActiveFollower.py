@@ -6,14 +6,14 @@ from WeiboClient import WeiboClient
 from conf import *
 from PublicToken import PublicToken
 
-class WeiboUser(WeiboClient):
+class ActiveFollower(WeiboClient):
     mSQLStatement = "INSERT INTO WeiboUser (idUser, screen_name, name, province, city, \
             location, description, url, profile_image, domain, gender, avatar_large, \
             verified, verified_reason, INSERT_TIMESTAMP, LAST_UPDATE_TIMESTAMP) VALUES \
             (%s, '%s', '%s', %s, %s, '%s', '%s', '%s', '%s', '%s', %s, '%s', %s, '%s', \
             current_timestamp, current_timestamp);"
 
-    updateRelationshipSQL = "INSERT INTO Followers (id_user, id_follower, is_ActiveFun VALUES \
+    updateRelationshipSQL = "INSERT INTO Followers (id_user, id_follower, is_ActiveFun) VALUES \
             (%s, %s, TRUE) ON DUPLICATE KEY UPDATE is_ActiveFun=TRUE;"
             
     mAPI = 'friendships/followers/active'
@@ -26,7 +26,7 @@ class WeiboUser(WeiboClient):
     #send json data to database
     def _sendToDB(self, j_reposts):
         assert(type(j_reposts) == types.DictType)
-        for activeUser in j_reposts:
+        for activeUser in j_reposts['users']:
             lSQLStatement = self.mSQLStatement % (activeUser['id'], activeUser['screen_name'], activeUser['name'], \
                     activeUser['province'], activeUser['city'], activeUser["location"], \
                     activeUser['description'], activeUser['url'], activeUser["profile_image_url"], activeUser["domain"], \
