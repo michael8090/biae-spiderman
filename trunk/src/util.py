@@ -4,12 +4,13 @@ Created on Sep 11, 2012
 @author: yiliu
 '''
 import MySQLdb
+from dateutil import parser
+
 from crawler.conf import *
 
 
 def parse_weibo_time_string(s):
-    #TODO
-    return 0
+    return parser.parse(s)
 
 def parse_long(s, default = None, base = 10):
     return long(s, base) if s != '' else default 
