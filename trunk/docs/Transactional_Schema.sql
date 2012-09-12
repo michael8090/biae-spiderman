@@ -99,14 +99,13 @@ CREATE TABLE repost(
 	PRIMARY KEY (repost_id),
 	INDEX (retweeted_status_id)
 );
+
 CREATE TABLE Followers(
 	id_user BIGINT NOT NULL,
 	id_follower BIGINT NOT NULL,
 	is_ActiveFun tinyint NOT NULL DEFAULT 0, 
 	PRIMARY KEY (id_user,id_follower)
 );
-
-
 
 -- the relationship table presents the relationship between user pairs, 
 -- for <A, B>, if A follows B, that makes A B's follower and B A's friend, we then should insert a pair <B, A>
