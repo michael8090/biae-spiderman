@@ -40,25 +40,6 @@ CREATE TABLE UserCounters(
 );
 
 
-CREATE TABLE Status(
-	idStatus BIGINT NOT NULL,
-	mid BIGINT NOT NULL,
-	id_creatorUID BIGINT NULL DEFAULT  NULL,
-	id_crawlerUID BIGINT NOT NULL,
-	source varchar(512) NULL DEFAULT NULL,
-	text varchar(512) NULL DEFAULT NULL,
-	is_truncated tinyint NULL DEFAULT 0,
-	is_favorited tinyint NULL DEFAULT 0,
-	created_time TIMESTAMP DEFAULT 0,
-	in_reply_to_screen_name	varchar(512) NULL DEFAULT NULL,
-	in_reply_to_status_id BIGINT DEFAULT NULL,
-	in_reply_to_user_id	BIGINT DEFAULT NULL,
-	INSERT_TIMESTAMP TIMESTAMP DEFAULT 0,
-	LAST_UPDATE_TIMESTAMP TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                  ON UPDATE CURRENT_TIMESTAMP,
-	PRIMARY KEY (idStatus)
-);
-
 CREATE TABLE status_comment(
 	comment_id BIGINT NOT NULL,
 	commented_status_id BIGINT NOT NULL,
@@ -98,41 +79,6 @@ CREATE TABLE repost(
 
 	PRIMARY KEY (repost_id),
 	INDEX (retweeted_status_id)
-);
-
-CREATE TABLE Followers(
-	id_user BIGINT NOT NULL,
-	id_follower BIGINT NOT NULL,
-	is_ActiveFun tinyint NOT NULL DEFAULT 0, 
-	PRIMARY KEY (id_user,id_follower)
-);
-
--- the relationship table presents the relationship between user pairs, 
--- for <A, B>, if A follows B, that makes A B's follower and B A's friend, we then should insert a pair <B, A>
-CREATE TABLE Relationships (
-     idFriend BIGINT NOT NULL,
-     idFollower BIGINT NOT NULL,
-     relationship_status TINYINT NOT NULL DEFAULT 1,
-     INSERT_TIMESTAMP TIMESTAMP DEFAULT 0,
-     LAST_UPDATE_TIMESTAMP TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                  ON UPDATE CURRENT_TIMESTAMP,
-     PRIMARY KEY (idFriend, idFollower, INSERT_TIMESTAMP),
-     Index (idFriend),
-     Index (idFollower)
-);
- 
-CREATE TABLE StatusCounts(
-	idStatus BIGINT NOT NULL,
-	id_crawlerUID BIGINT NULL DEFAULT  NULL,
-	created_time datetime NULL DEFAULT  NULL,
-	comments_count int NULL DEFAULT NULL,
-	reposts_count int NULL DEFAULT NULL,
-	
-	INSERT_TIMESTAMP TIMESTAMP DEFAULT 0,
-	LAST_UPDATE_TIMESTAMP TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                  ON UPDATE CURRENT_TIMESTAMP,
-	Primary key (idStatus),
-	KEY IDX_PostCounts_1(id_crawlerUID)
 );
 
 CREATE TABLE Tags (
