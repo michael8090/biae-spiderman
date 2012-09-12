@@ -27,7 +27,7 @@ class Status(WeiboClient):
                 INSERT INTO Status_Counter \
                 (id_status,reposts_count,comments_count,INSERT_TIMESTAMP) \
                 values %s;"
-    mSQLValueStatement = "(%s,%s,'%s','%s',%s,%s,%s,%s,%s,%s,%s,%s,%s,current_timestamp),"
+    mSQLValueStatement = "(%s,FROM_UNIXTIME(%s),'%s','%s',%s,%s,%s,%s,%s,%s,%s,%s,%s,current_timestamp),"
     mSQLValue_Status_Counter = "(%s,%s,%s,current_timestamp),"
                 
     mAPI = 'statuses/user_timeline'
