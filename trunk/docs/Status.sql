@@ -1,7 +1,7 @@
 use biae;
 CREATE TABLE Status(
 	id_status BIGINT NOT NULL,
-	create_time varchar(512) NULL DEFAULT NULL,
+	create_time TIMESTAMP DEFAULT 0,
 	text varchar(512) NULL DEFAULT NULL,
 	source varchar(512) NULL DEFAULT NULL,
 	is_favorited tinyint NULL DEFAULT 0,
