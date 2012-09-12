@@ -15,9 +15,9 @@ def getNULL(s):
 
 class FollowersFollowingV(WeiboClient):
     mSQLStatement = "INSERT INTO Followers \
-                (id_user, id_follower, is_ActiveFun) \
+                (id_user, id_follower, is_ActiveFun,INSERT_TIMESTAMP) \
                 VALUES %s ON DUPLICATE KEY UPDATE id_user=id_user;"
-    mSQLValueStatement = "(%s,%s,%s),"
+    mSQLValueStatement = "(%s,%s,%s,current_timestamp),"
                 
     mAPI = 'friendships/friends'
     
