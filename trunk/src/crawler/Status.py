@@ -7,6 +7,10 @@ from WeiboClient import WeiboClient
 from conf import *
 from PublicToken import PublicToken
 from util import *
+from dao.repost import RepostDao
+from repost import WeiboRepostAPI
+from dao.comment import CommentDao
+from comment import WeiboCommentAPI
 
 def getNULL(s):
     if s=='':
@@ -41,6 +45,10 @@ class Status(WeiboClient):
         assert(type(iJsonData) == types.ListType)
         lValueStatement = ""
         lValueStatement2 = ""
+        repost_crawler = WeiboRepostAPI(WeiboClient)
+        repost_result = []
+        comment_crawler = WeiboCommentAPI(WeiboClient)
+        comment_result = []
         for lInterator in iJsonData:
             lValueStatement += (self.mSQLValueStatement % 
                                 (lInterator['id'],parse_weibo_time_string(lInterator['created_at']),MySQLdb.escape_string(lInterator['text']),\
@@ -51,11 +59,19 @@ class Status(WeiboClient):
             lValueStatement2 += (self.mSQLValue_Status_Counter %
                                  (lInterator['id'],lInterator['reposts_count'],lInterator['comments_count']))
             lSQLStatement = self.mSQLStatement % (lValueStatement[:len(lValueStatement) - 1],lValueStatement2[:-1])
-    
+            
+            repost_result.append(repost_crawler.get_reposts_of_status(lInterator['id']))
+            comment_result.append(comment_crawler.get_comments_on_status(lInterator['id']))
+            
+            
         #lSQLStatement = MySQLdb.escape_string(lSQLStatement.encode('utf8','ignore'))
         print(lSQLStatement)
         try:
             conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
+            repost_dao = RepostDao(conn)
+            repost_dao.insert_reposts(repost_result)
+            comment_dao = CommentDao(conn)
+            comment_dao.insert_comments(comment_result)
             cursor = conn.cursor()
             cursor.execute(lSQLStatement) 
             cursor.close()
