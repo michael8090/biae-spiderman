@@ -59,10 +59,35 @@ class WeiboClient():
         for (lKey, lValue) in iParams.iteritems():
             lParamString = "%s=%s&" % (lKey, lValue)
             lURL += lParamString
-
         print(lURL[:-1])
         return lURL[:len(lURL) - 1]
     
+ #support the sleep and re-try   
+    def _getPage(self,lURL):
+        try:
+            self._controlCallTypeFrequency()
+            req = urllib2.Request(lURL)
+            response = urllib2.urlopen(req,timeout=8)
+            page = response.read()
+            response.close()
+            return page
+        except urllib2.URLError, e:
+            if(str(e) == '<urlopen error timed out>'):
+                for i in range(0,3):
+                    try:
+                        self._controlCallTypeFrequency()
+                        req = urllib2.Request(lURL)
+                        response = urllib2.urlopen(req,timeout=8)
+                        page = response.read()
+                        esponse.close()
+                        return page
+                    except urllib2.URLError, e1:
+                        print('retry %d failed in 3 retries'%(i+1))
+            raise
+        
+
+
+
     #fetch the API with multiple pages and cursor parameters
     def _fetchMultiplePages(self, iAPI, iParams):
         if self.mPagingAPIs[iAPI] == 'cursor':
@@ -71,10 +96,7 @@ class WeiboClient():
             while True:
                 lURL = self._getAPICallURL(iAPI, iParams)
                 try:
-                    req = urllib2.Request(lURL)
-                    response = urllib2.urlopen(req)
-                    page = response.read()
-                    response.close()
+                    page = self._getPage(lURL) 
                     lJsonResult = json.loads(page)
                     oJsonResult += lJsonResult[self.mAPIDataFields[iAPI]]
                     lNextCursor = lJsonResult['next_cursor']
@@ -90,11 +112,8 @@ class WeiboClient():
             while True:
                 lURL = self._getAPICallURL(iAPI, iParams)
                 try:
-                    req = urllib2.Request(lURL)
-                    response = urllib2.urlopen(req)
-                    page = response.read()
+                    page = self._getPage(lURL)
                     #print(page)
-                    response.close()
                     lJsonResult = json.loads(page)
                     oJsonResult += lJsonResult[self.mAPIDataFields[iAPI]]
                     totalNumber = lJsonResult['total_number']
@@ -112,10 +131,7 @@ class WeiboClient():
     def _fetchSinglePage(self, iAPI, iParams):
         lURL = self._getAPICallURL(iAPI, iParams)
         try:
-            req = urllib2.Request(lURL)
-            response = urllib2.urlopen(req)
-            page = response.read()
-            response.close()
+            page = _getPage(lURL)
             oJsonResult = json.loads(page)
             return oJsonResult
         except urllib2.HTTPError, e:
@@ -149,7 +165,7 @@ class WeiboClient():
     
     #fetch the connection with given API name and parameters
     def fetchUsingAPI(self, iAPI, iParams):
-        self._controlCallTypeFrequency()
+        #self._controlCallTypeFrequency()
         oJsonResult = {}
         if self.mPagingAPIs.has_key(iAPI):
             oJsonResult = self._fetchMultiplePages(iAPI, iParams)

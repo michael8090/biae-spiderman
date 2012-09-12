@@ -56,7 +56,8 @@ class Followers(WeiboClient):
                 print ("Error: Cannot crawl data for Weibo User ID=%s because of: %s" % (lInterator['id'], str(e)))
     
         #lSQLStatement = MySQLdb.escape_string(lSQLStatement.encode('utf8','ignore'))
-        print(lSQLStatement)
+        print("SQLStatment:%s"%lSQLStatement)
+        print("lSQLStatement_fp:%s"%lSQLStatement_fp)
         try:
             conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
             cursor = conn.cursor()
