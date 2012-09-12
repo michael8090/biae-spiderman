@@ -131,7 +131,7 @@ class WeiboClient():
     def _fetchSinglePage(self, iAPI, iParams):
         lURL = self._getAPICallURL(iAPI, iParams)
         try:
-            page = _getPage(lURL)
+            page = self._getPage(lURL)
             oJsonResult = json.loads(page)
             return oJsonResult
         except urllib2.HTTPError, e:
