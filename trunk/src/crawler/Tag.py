@@ -11,7 +11,8 @@ from WeiboClient import WeiboClient
 
 class Tag(WeiboClient):
     mSQLStatement = "INSERT INTO Tags (idUser, tagId, tag, weight, \
-            INSERT_TIMESTAMP, LAST_UPDATE_TIMESTAMP) VALUES %s"
+            INSERT_TIMESTAMP, LAST_UPDATE_TIMESTAMP) VALUES %s \
+            ON DUPLICATE KEY UPDATE LAST_UPDATE_TIMESTAMP=current_timestamp"
     mSQLValueStatement = "(%s, %s, '%s', %s, current_timestamp, current_timestamp),"
                 
     mAPI = 'tags/tags_batch'
