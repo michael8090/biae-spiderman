@@ -4,6 +4,8 @@ import urllib2
 import json
 import time
 import types
+import util
+import chardet
 
 
 class WeiboClient():
@@ -72,6 +74,9 @@ class WeiboClient():
             response = urllib2.urlopen(req,timeout=8)
             page = response.read()
             response.close()
+            #page = util.remove_InvalideChar_utf8(page)
+            print(chardet.detect(page))
+            #print(page)
             return page
         except urllib2.URLError, e:
             if(str(e) == '<urlopen error timed out>'):
@@ -82,6 +87,9 @@ class WeiboClient():
                         response = urllib2.urlopen(req,timeout=8)
                         page = response.read()
                         response.close()
+                        print(chardet.detect(page))
+                        #page = util.remove_InvalideChar_utf8(page)
+                        #print(page)
                         return page
                     except urllib2.URLError, e1:
                         print('retry %d failed in 3 retries'%(i+1))
