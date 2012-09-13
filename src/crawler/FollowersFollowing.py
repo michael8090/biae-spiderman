@@ -54,7 +54,8 @@ class FollowersFollowingV(WeiboClient):
                 lSQLStatement_fp = self.mSQLStatement_fp % (lValueStatement_fp[:-1])
     
         #lSQLStatement = MySQLdb.escape_string(lSQLStatement.encode('utf8','ignore'))
-        print(lSQLStatement)
+        #print(lSQLStatement)
+        print('SQL for FollowersFollowing ready.')
         try:
             conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
             cursor = conn.cursor()
@@ -63,6 +64,7 @@ class FollowersFollowingV(WeiboClient):
             cursor.close()
             conn.commit()
             conn.close()
+            print('Store data for FollowersFollowing to DB done.')
         except Exception, e:
             print 'Error when insert WeiboFollower into Database for uid = %s because of: %s' % (self.mUid, e) 
     
@@ -73,7 +75,8 @@ class FollowersFollowingV(WeiboClient):
         #mPublicToken is a list:['uid', 'access_token']
         iParams['access_token'] = self.mPublicToken[1]
         lJsonResult = self.fetchUsingAPI(self.mAPI, iParams)
-        print(lJsonResult)
+        #print(lJsonResult)
+        print('Get Json data for FollowersFollowing done.')
         if type(lJsonResult) == types.ListType and len(lJsonResult) > 0:
             self._sendToDB(lJsonResult)
 

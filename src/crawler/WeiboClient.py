@@ -59,8 +59,8 @@ class WeiboClient():
         for (lKey, lValue) in iParams.iteritems():
             lParamString = "%s=%s&" % (lKey, lValue)
             lURL += lParamString
-        print(lURL[:-1])
-        #print '.',
+        #print(lURL[:-1])
+        print '.',
         return lURL[:len(lURL) - 1]
     
  #support the sleep and re-try   
@@ -112,6 +112,8 @@ class WeiboClient():
         elif self.mPagingAPIs[iAPI] == 'page':
             #print 'to be continued...'
             iParams['page'] = 1
+            if not iParams.has_key('count'):
+                iParams['count'] = 200
             oJsonResult = []
             while True:
                 lURL = self._getAPICallURL(iAPI, iParams)
@@ -122,7 +124,7 @@ class WeiboClient():
                     oJsonResult += lJsonResult[self.mAPIDataFields[iAPI]]
                     totalNumber = lJsonResult['total_number']
                     currentPage = iParams['page']
-                    if currentPage*50 >= totalNumber or currentPage>100:
+                    if currentPage*iParams['count'] >= totalNumber:
                         return oJsonResult
                     iParams['page'] = currentPage+1
                 except urllib2.HTTPError, e:
