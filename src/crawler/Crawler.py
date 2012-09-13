@@ -10,7 +10,7 @@ from conf import *
 from Followers import Followers
 from Status import Status
 
-if __name__ == '__main__':
+if __name__ == '__Crawler__':
 
     #get EUser Ids
     EUserIds = EUser.getEUserIds()
