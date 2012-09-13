@@ -56,8 +56,9 @@ class Followers(WeiboClient):
 #                print ("Error: Cannot crawl data for Weibo User ID=%s because of: %s" % (lInterator['id'], str(e)))
     
         #lSQLStatement = MySQLdb.escape_string(lSQLStatement.encode('utf8','ignore'))
-        print("SQLStatment:%s"%lSQLStatement)
-        print("lSQLStatement_fp:%s"%lSQLStatement_fp)
+        #print("SQLStatment:%s"%lSQLStatement)
+        #print("lSQLStatement_fp:%s"%lSQLStatement_fp)
+        print('SQL for  Followers ready.')
         try:
             conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
             cursor = conn.cursor()
@@ -66,6 +67,7 @@ class Followers(WeiboClient):
             cursor.close()
             conn.commit()
             conn.close()
+            print('Store data for Followers to db done.')
         except Exception, e:
             print 'Error when insert WeiboFollower into Database for uid = %s because of: %s' % (self.mUid, e) 
     
@@ -76,7 +78,8 @@ class Followers(WeiboClient):
         #mPublicToken is a list:['uid', 'access_token']
         iParams['access_token'] = self.mPublicToken[1]
         lJsonResult = self.fetchUsingAPI(self.mAPI, iParams)
-        print(lJsonResult)
+        #print(lJsonResult)
+        print('Get Json data for Followers done.')
         if type(lJsonResult) == types.ListType and len(lJsonResult) > 0:
             self._sendToDB(lJsonResult)
 

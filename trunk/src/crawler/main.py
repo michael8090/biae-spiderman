@@ -47,7 +47,7 @@ if __name__ == '__main__':
             activelist = activefollowers.getActiveUsers()
             for auser in activelist:
                 try:
-                    FollowersFollowingV(auser['id']).process()
+                    FollowersFollowingV(auser['id'],1).process()
                 except Exception, e:
                     print ("Error: Cannot crawl following list for activeUser ID=%s because of: %s" % (auser['id'], str(e)))
         except Exception, e:

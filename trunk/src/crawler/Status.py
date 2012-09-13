@@ -49,34 +49,37 @@ class Status(WeiboClient):
         repost_result = []
         comment_crawler = WeiboCommentAPI(self)
         comment_result = []
-        for lInterator in iJsonData:
-            lValueStatement += (self.mSQLValueStatement % 
-                                (lInterator['id'],parse_weibo_time_string(lInterator['created_at']),MySQLdb.escape_string(lInterator['text']),\
-                                MySQLdb.escape_string(lInterator['source']),lInterator['favorited'],lInterator['truncated'],\
-                                getNULL(lInterator['in_reply_to_status_id']),getNULL(lInterator['in_reply_to_user_id']),getNULL(lInterator['in_reply_to_screen_name']),\
-                                lInterator['mid'],lInterator['reposts_count'],lInterator['comments_count'],\
-                                lInterator['user']['id']))
-            lValueStatement2 += (self.mSQLValue_Status_Counter %
-                                 (lInterator['id'],lInterator['reposts_count'],lInterator['comments_count']))
-            lSQLStatement = self.mSQLStatement % (lValueStatement[:len(lValueStatement) - 1],lValueStatement2[:-1])
-            
-            repost_result.append(repost_crawler.get_reposts_of_status(lInterator['id']))
-            comment_result.append(comment_crawler.get_comments_on_status(lInterator['id']))
-            
-            
-        #lSQLStatement = MySQLdb.escape_string(lSQLStatement.encode('utf8','ignore'))
-        print(lSQLStatement)
+
         try:
             conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
-            repost_dao = RepostDao(conn)
-            repost_dao.insert_reposts(repost_result)
-            comment_dao = CommentDao(conn)
-            comment_dao.insert_comments(comment_result)
+            for lInterator in iJsonData:
+                lValueStatement += (self.mSQLValueStatement % 
+                                    (lInterator['id'],parse_weibo_time_string(lInterator['created_at']),MySQLdb.escape_string(lInterator['text']),\
+                                    MySQLdb.escape_string(lInterator['source']),lInterator['favorited'],lInterator['truncated'],\
+                                    getNULL(lInterator['in_reply_to_status_id']),getNULL(lInterator['in_reply_to_user_id']),getNULL(lInterator['in_reply_to_screen_name']),\
+                                    lInterator['mid'],lInterator['reposts_count'],lInterator['comments_count'],\
+                                    lInterator['user']['id']))
+                lValueStatement2 += (self.mSQLValue_Status_Counter %
+                                     (lInterator['id'],lInterator['reposts_count'],lInterator['comments_count']))
+                lSQLStatement = self.mSQLStatement % (lValueStatement[:len(lValueStatement) - 1],lValueStatement2[:-1])
+                
+                repost_result = repost_crawler.get_reposts_of_status(lInterator['id'])
+                comment_result = comment_crawler.get_comments_on_status(lInterator['id'])
+                repost_dao = RepostDao(conn)
+                repost_dao.insert_reposts(repost_result)
+                comment_dao = CommentDao(conn)
+                comment_dao.insert_comments(comment_result)
+                
+                
+            #lSQLStatement = MySQLdb.escape_string(lSQLStatement.encode('utf8','ignore'))
+            #print(lSQLStatement)
+            print('SQL for Status ready.')
             cursor = conn.cursor()
             cursor.execute(lSQLStatement) 
             cursor.close()
             conn.commit()
             conn.close()
+            print('store Status data to DB done.')
         except Exception, e:
             print 'Error when insert WeiboFollower into Database for uid = %s because of: %s' % (self.mUid, e) 
     
@@ -87,7 +90,8 @@ class Status(WeiboClient):
         #mPublicToken is a list:['uid', 'access_token']
         iParams['access_token'] = self.mPublicToken[1]
         lJsonResult = self.fetchUsingAPI(self.mAPI, iParams)
-        print(lJsonResult)
+        #print(lJsonResult)
+        print('Get Json data for status done.')
         if type(lJsonResult) == types.ListType and len(lJsonResult) > 0:
             self._sendToDB(lJsonResult)
 
