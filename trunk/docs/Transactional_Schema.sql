@@ -1,4 +1,4 @@
-﻿CREATE TABLE EUser (
+CREATE TABLE EUser (
 	idUser BIGINT NOT NULL,
 	screen_name varchar(512) NULL,
 	primary key(idUser)
