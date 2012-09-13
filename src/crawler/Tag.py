@@ -1,11 +1,13 @@
 '''Tag's methods
 '''
-import MySQLdb
 import types
 import math
-from WeiboClient import WeiboClient
-from PublicToken import PublicToken
+import MySQLdb
+
+import util
 from conf import *
+from PublicToken import PublicToken
+from WeiboClient import WeiboClient
 
 class Tag(WeiboClient):
     mSQLStatement = "INSERT INTO Tags (idUser, tagId, tag, weight, \
@@ -25,11 +27,11 @@ class Tag(WeiboClient):
             for lTag in lUser['tags']:
                 for k, v in lTag.items():
                     if k != "weight":
-                        lValueStatement += (self.mSQLValueStatement % (lUser['id'], k, v, lTag['weight']))
+                        lValueStatement += (self.mSQLValueStatement % (lUser['id'], k, MySQLdb.escape_string(v), lTag['weight']))
         lSQLStatement = self.mSQLStatement % lValueStatement[:len(lValueStatement) - 1]
 
         try:
-            conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
+            conn = util.get_crawler_connection()
             cursor = conn.cursor()
             cursor.execute(lSQLStatement) 
             cursor.close()
@@ -42,7 +44,7 @@ class Tag(WeiboClient):
     def _fetchFromDB(self):
         mSQLFetchVUserId = "SELECT idUser from WeiboUser where verified = TRUE;"
         try:
-            conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
+            conn = util.get_crawler_connection()
             cursor = conn.cursor()
             cursor.execute(mSQLFetchVUserId) 
             result = cursor.fetchall()
