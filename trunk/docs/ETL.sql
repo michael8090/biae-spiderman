@@ -1,4 +1,5 @@
 USE biae_raw;
+START TRANSACTION;
 
 -- Get count at {status, day} level.
 CREATE TEMPORARY TABLE biae._sc0
@@ -57,23 +58,17 @@ FROM EUser e
 GROUP BY sc.status_id, sc.create_date;
 
 
-INSERT INTO biae.fact_enterprise_comment_count (enterprise_id, post_id, comment_date, comment_count, comment_count_today)
+INSERT INTO biae.fact_enterprise_comment_count
+	(enterprise_id, post_id, comment_date, comment_count, comment_count_today)
 SELECT
-	enterprise_id,
-  status_id AS post_id,
-	create_date AS comment_date,
-	comment_count,
-  comment_count_today
+	enterprise_id, status_id, create_date, comment_count, comment_count_today
 FROM biae._sc2;
 
 
-INSERT INTO biae.fact_enterprise_repost_count (enterprise_id, post_id, repost_date, repost_count, repost_count_today)
+INSERT INTO biae.fact_enterprise_repost_count
+	(enterprise_id, post_id, repost_date, repost_count, repost_count_today)
 SELECT
-	enterprise_id,
-  status_id AS post_id,
-	create_date AS repost_date,
-	repost_count,
-	repost_count_today
+	enterprise_id, status_id, create_date, repost_count, repost_count_today
 FROM biae._sc2;
 
 DROP TABLE biae._sc0;
@@ -84,19 +79,21 @@ DROP TABLE biae._sc2;
 
 
 
-INSERT INTO biae.fact_enterprise_fans
+INSERT INTO biae.fact_enterprise_fans (
+	enterprise_id,
+	day_date,
+	fans_count,
+	posts_count)
 SELECT
-	e.idUser AS enterprise_id
-	DATE(uc.insert_timestamp) AS day_date
-	uc.followers_count AS fans_count
-	uc.statuses_count AS posts_count
-
+	e.idUser,
+	DATE(uc.insert_timestamp),
+	uc.followers_count,
+	uc.statuses_count
 FROM EUser e
 	JOIN UserCounters uc ON uc.idUser = e.idUser
 WHERE uc.insert_timestamp IN
 	(
-		SELECT
-			MAX(insert_timestamp)
+		SELECT MAX(insert_timestamp)
 		FROM UserCounters
 		GROUP BY DATE(insert_timestamp)
 	);
@@ -171,14 +168,14 @@ FROM repost r JOIN status s ON s.id_status = r.retweeted_status_id;
 
 
 --- lu_user
-INSERT INTO biae.lu_user
+INSERT INTO biae.lu_user (user_id, user_name, gender_id, city_id, fans_count, has_v)
 SELECT
-	fo.id_follower AS user_id,
-	u.screen_name AS user_name,
-	u.gender AS gender_id,
-	10000 * u.province + u.city AS city_id,
-	u.followers_count AS fans_count,
-	u.verified AS has_v
+	u.idUser,
+	u.screen_name,
+	u.gender,
+	10000 * u.province + u.city,
+	u.followers_count,
+	u.verified
 FROM followers fo JOIN euser e ON e.idUser = fo.id_user
 	JOIN WeiboUser u ON u.idUser = fo.id_follower;
 
@@ -192,23 +189,85 @@ FROM followers fo JOIN euser e ON e.idUser = fo.id_user
 
 
 --- rel_fan
+INSERT INTO rel_fan (enterprise_id, user_id, fan_date)
+SELECT
+	fo.id_user,
+	fo.id_follower,
+	DATE(fo.insert_timestamp)
+FROM EUser e
+	JOIN followers fo ON fo.id_user = e.idUser
+WHERE INSERT_TIMESTAMP > 0;
 
 
-
-
---- lu_qualified_user
---- SELECT 
 
 
 
 --- rel_qualified_fan
+DELETE FROM rel_fan;
+INSERT INTO rel_fan (enterprise_id, qualified_user_id)
 SELECT
-FROM 
+	fo.id_follower,
+	u.screen_name,
+	u.gender,
+	10000 * u.province + u.city,
+	u.followers_count,
+	u.verified
+FROM EUser e
+	JOIN followers fo ON fo.id_user = e.idUser
+WHERE fo.is_activefun = 1;
+
+
+--- lu_qualified_user
+INSERT INTO lu_qualified_user (qualified_user_id, user_name, gender_id, city_id, fans_count, has_v)
+SELECT
+	u.idUser,
+	u.screen_name,
+	u.gender,
+	10000 * u.province + u.city,
+	u.followers_count,
+	u.verified
+FROM WeiboUser u
+WHERE u.idUser IN (SELECT DISTINCT qualified_user_id FROM rel_fan);
+
+
 
 
 --- rel_user_interest
+CREATE TABLE Tags (
+	idUser BIGINT NOT NULL,
+	tagId BIGINT NOT NULL,
+	tag varchar(512) NOT NULL,
+	weight integer NULL,
+	INSERT_TIMESTAMP TIMESTAMP DEFAULT 0,
+	LAST_UPDATE_TIMESTAMP TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                  ON UPDATE CURRENT_TIMESTAMP,
+	PRIMARY KEY (idUser, tagId)
+);
 
 
+CREATE TABLE biae._user_interest
+SELECT 
+	idUser AS user_id,
+	interest_id,
+	COUNT(*) AS times
+FROM tags t
+	JOIN keyword_interest i ON t.tag LIKE CONCAT('%', t.keyword, '%');
+
+
+INSERT INTO biae.rel_user_interest (user_id, interest_id)
+SELECT 
+	ui1.user_id,
+	ui1.interest_id
+FROM biae._user_interest ui1
+	LEFT OUTER JOIN biae.user_interest ui2
+		ON ui1.user_id = ui2.user_id AND ui1.times < ui2.times
+GROUP BY ui1.user_id, ui1.interest_id
+HAVING COUNT(*) < 3
+ORDER BY ui1.user_id, ui1.times DESC;
+
+DROP TABLE biae._user_interest;
+
+COMMIT;
 
 
 
