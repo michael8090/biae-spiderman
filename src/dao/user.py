@@ -24,10 +24,18 @@ class UserDao:
     
     @staticmethod
     def _mapRow(o):
+        if o['gender'].find('m') != -1:
+            o['gender'] = 1
+        else:
+            if o['gender'].find('f') != -1:
+                o['gender'] = 2
+            else:
+                o['gender'] = 3
+            
         return (o['id'], o['screen_name'], o['name'], o['province'],
                  o['city'], o['location'], o['description'],
                  o['url'], o['profile_image_url'], o['domain'],
-                 (o['gender'].find('f') == -1), o['avatar_large'],
+                 o['gender'], o['avatar_large'],
                  o['verified'], o['verified_reason']
                  )
         
