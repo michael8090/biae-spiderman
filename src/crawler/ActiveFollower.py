@@ -18,6 +18,7 @@ class ActiveFollower(WeiboClient):
     
     def __init__(self, iUid):
         self.mUid = iUid
+        self.activeUsers = []
         #only use the first row of public tokens right now, you can handle more if you want
         WeiboClient.__init__(self, PublicToken.getPublicToken()[0])
     
@@ -56,3 +57,7 @@ class ActiveFollower(WeiboClient):
         lJsonResult = self.fetchUsingAPI(self.mAPI, iParams)
         if type(lJsonResult) == types.DictType and not lJsonResult.has_key('error'):
             self._sendToDB(lJsonResult)
+            self.activeUsers = lJsonResult['users']
+
+    def getActiveUsers(self):
+        return self.activeUsers
