@@ -5,6 +5,7 @@ import json
 import time
 import types
 
+
 class WeiboClient():
     #limited 5 calls per 20 seconds, = 900 calls per hour
     CALL_TIMES_PER_INTERVAL = 5
