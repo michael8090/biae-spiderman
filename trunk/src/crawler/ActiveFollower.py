@@ -24,17 +24,17 @@ class ActiveFollower(WeiboClient):
     
     #send json data to database
     def _sendToDB(self, jActiveUsers):
-        assert(type(jActiveUsers) == types.DictType)
+        assert(type(jActiveUsers) == types.ListType)
         
         try:
             conn = util.get_crawler_connection()
             dao = UserDao(conn)
-            dao.insert_users(jActiveUsers['users'])
+            dao.insert_users(jActiveUsers)
             conn.close()
         except Exception, e:
             print 'Error when insert active user into Database because of: %s' % (e, )
                 
-        for activeUser in jActiveUsers['users']:
+        for activeUser in jActiveUsers:
             iRelationshipSQL = self.iRelationshipSQLTemplate % (self.mUid, activeUser['id'])
             
             try:
@@ -56,8 +56,9 @@ class ActiveFollower(WeiboClient):
         iParams['count'] = 200
         lJsonResult = self.fetchUsingAPI(self.mAPI, iParams)
         if type(lJsonResult) == types.DictType and not lJsonResult.has_key('error'):
-            self._sendToDB(lJsonResult)
             self.activeUsers = lJsonResult['users']
+            self._sendToDB(self.activeUsers)
+            
 
     def getActiveUsers(self):
         return self.activeUsers

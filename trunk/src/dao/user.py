@@ -1,5 +1,7 @@
 import types
 
+from util import parse_weibo_time_string
+
 class UserDao:
     
     def __init__(self, conn):
@@ -16,7 +18,7 @@ class UserDao:
         try:
             conn = self._conn
             cursor = conn.cursor()
-            cursor.executemany(self.SQL_INSERT_REPOSTS, rows)
+            cursor.executemany(self.SQL_INSERT_USERS, rows)
             cursor.close()
             conn.commit()
         except Exception, e:
@@ -36,17 +38,17 @@ class UserDao:
                  o['city'], o['location'], o['description'], o['url'],
                  o['profile_image_url'], o['domain'], o['gender'],
                  o['followers_count'], o['friends_count'], o['statuses_count'],
-                 o['favourites_count'], o['created_at'], o['avatar_large'],
-                 o['verified'], o['verified_reason']
+                 o['favourites_count'], parse_weibo_time_string(o['created_at']),
+                 o['avatar_large'], o['verified'], o['verified_reason']
                  )
         
-    SQL_INSERT_REPOSTS = '''
+    SQL_INSERT_USERS = '''
 INSERT INTO WeiboUser (idUser, screen_name, name, province, city,
         location, description, url, profile_image, domain, gender,
         followers_count, friends_count, statuses_count, favourites_count,
         created_at, avatar_large, verified, verified_reason,
         INSERT_TIMESTAMP, LAST_UPDATE_TIMESTAMP)
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, %s,
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, FROM_UNIXTIME(%s), %s, %s, %s,
         current_timestamp, current_timestamp)
 ON DUPLICATE KEY UPDATE
         followers_count = VALUES(followers_count),

@@ -3,6 +3,8 @@ Created on Sep 11, 2012
 
 @author: yiliu
 '''
+
+import MySQLdb
 from dateutil import parser
 from calendar import timegm
 from crawler.WeiboClient import WeiboClient
