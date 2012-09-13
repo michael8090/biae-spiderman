@@ -5,9 +5,9 @@ import MySQLdb
 
 import util
 from conf import *
+from dao.user import UserDao
 from PublicToken import PublicToken
 from WeiboClient import WeiboClient
-from dao.user import UserDao
 
 class WeiboUser(WeiboClient):
 
