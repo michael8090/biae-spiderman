@@ -9,8 +9,9 @@ from ActiveFollower import ActiveFollower
 from conf import *
 from Followers import Followers
 from Status import Status
+from FollowersFollowing import FollowersFollowingV
 
-if True:
+if __name__ == '__main__':
 
     #get EUser Ids
     EUserIds = EUser.getEUserIds()
@@ -37,10 +38,18 @@ if True:
         except Exception, e:
             print ("Error: Cannot crawl Status data for EUser ID=%s because of: %s" % (EUserId, str(e)))        
             
-#        try:
-#            ActiveFollower(EUserId).process()
-#        except Exception, e:
-#            print ("Error: Cannot crawl ActiveFollower for EUser ID=%s because of: %s" % (EUserId, str(e)))
+        #for each WeiboUser ID, crawl its ActiveFollowers and their following list(Only V stored in DB):    
+        try:
+            activefollowers = ActiveFollower(EUserId)
+            activefollowers.process()
+            activelist = activefollowers.getActiveUsers()
+            for auser in activelist:
+                try:
+                    FollowersFollowingV(auser['id']).process()
+                except Exception, e:
+                    print ("Error: Cannot crawl following list for activeUser ID=%s because of: %s" % (auser['id'], str(e)))
+        except Exception, e:
+            print ("Error: Cannot crawl ActiveFollower for EUser ID=%s because of: %s" % (EUserId, str(e)))
 
     try:
         Tag().process()

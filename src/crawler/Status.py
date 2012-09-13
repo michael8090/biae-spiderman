@@ -45,9 +45,9 @@ class Status(WeiboClient):
         assert(type(iJsonData) == types.ListType)
         lValueStatement = ""
         lValueStatement2 = ""
-        repost_crawler = WeiboRepostAPI(WeiboClient)
+        repost_crawler = WeiboRepostAPI(self)
         repost_result = []
-        comment_crawler = WeiboCommentAPI(WeiboClient)
+        comment_crawler = WeiboCommentAPI(self)
         comment_result = []
         for lInterator in iJsonData:
             lValueStatement += (self.mSQLValueStatement % 
