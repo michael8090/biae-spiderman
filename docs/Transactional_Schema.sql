@@ -92,6 +92,44 @@ CREATE TABLE Tags (
 	PRIMARY KEY (idUser, tagId)
 );
 
+CREATE TABLE Followers(
+	id_user BIGINT NOT NULL,
+	id_follower BIGINT NOT NULL,
+	is_ActiveFun tinyint NOT NULL DEFAULT 0, 
+	INSERT_TIMESTAMP TIMESTAMP DEFAULT 0,
+	PRIMARY KEY (id_user,id_follower)
+);
+CREATE TABLE Status(
+	id_status BIGINT NOT NULL,
+	create_time TIMESTAMP DEFAULT 0,
+	text varchar(512) NULL DEFAULT NULL,
+	source varchar(512) NULL DEFAULT NULL,
+	is_favorited tinyint NULL DEFAULT 0,
+	is_truncated tinyint NULL DEFAULT 0,
+	in_reply_to_status_id BIGINT DEFAULT NULL,
+	in_reply_to_user_id BIGINT DEFAULT NULL,
+	in_reply_to_screen_name varchar(512) NULL DEFAULT NULL,
+	mid BIGINT NOT NULL,
+	reposts_count INT NOT NULL,
+	comments_count INT NOT NULL,
+	id_user BIGINT NOT NULL,
+
+	INSERT_TIMESTAMP TIMESTAMP DEFAULT 0,
+	LAST_UPDATE_TIMESTAMP TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                  ON UPDATE CURRENT_TIMESTAMP,
+	PRIMARY KEY (id_status)
+);
+
+CREATE TABLE Status_Counter(
+	id_status BIGINT NOT NULL,
+	reposts_count INT NOT NULL,
+	comments_count INT NOT NULL,
+	INSERT_TIMESTAMP TIMESTAMP DEFAULT 0,
+	
+	PRIMARY KEY (id_status,INSERT_TIMESTAMP)
+);
+
+
 CREATE TABLE `Public_Token_Pool` (
 	`UserID` BIGINT(20) NOT NULL,
 	`Access_Token` TEXT NULL,
