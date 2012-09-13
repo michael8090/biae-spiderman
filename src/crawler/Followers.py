@@ -4,7 +4,7 @@ import MySQLdb
 import json
 import types
 from WeiboClient import WeiboClient
-from conf import *
+from crawler.conf import *
 from PublicToken import PublicToken
 from FollowersFollowing import FollowersFollowingV
 

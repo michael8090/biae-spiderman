@@ -7,6 +7,9 @@ from EUser import EUser
 from Tag import Tag
 from ActiveFollower import ActiveFollower
 from conf import *
+from Followers import Followers
+from Status import Status
+from FollowersFollowing import FollowersFollowingV
 
 if __name__ == '__main__':
 
@@ -14,16 +17,37 @@ if __name__ == '__main__':
     EUserIds = EUser.getEUserIds()
     print EUserIds
 
-    #for each WeiboUser ID, crawl its Profile:
+    
     for EUserId in EUserIds:
+        #for each WeiboUser ID, crawl its Profile:
         try:
             weiboUser = WeiboUser(EUserId)
             weiboUser.process()
         except Exception, e:
             print ("Error: Cannot crawl data for EUser ID=%s because of: %s" % (EUserId, str(e)))
 
+        #for each WeiboUser ID, crawl its followers and their Profiles:
         try:
-            ActiveFollower(EUserId).process()
+            Followers(EUserId).process()
+        except Exception, e:
+            print ("Error: Cannot crawl follower data for EUser ID=%s because of: %s" % (EUserId, str(e)))
+     
+        #for each WeiboUser ID, crawl its Status and their comments and reposts:
+        try:
+            Status(EUserId).process()
+        except Exception, e:
+            print ("Error: Cannot crawl Status data for EUser ID=%s because of: %s" % (EUserId, str(e)))        
+            
+        #for each WeiboUser ID, crawl its ActiveFollowers and their following list(Only V stored in DB):    
+        try:
+            activefollowers = ActiveFollower(EUserId)
+            activefollowers.process()
+            activelist = activefollowers.getActiveUsers()
+            for auser in activelist:
+                try:
+                    FollowersFollowingV(auser['id']).process()
+                except Exception, e:
+                    print ("Error: Cannot crawl following list for activeUser ID=%s because of: %s" % (auser['id'], str(e)))
         except Exception, e:
             print ("Error: Cannot crawl ActiveFollower for EUser ID=%s because of: %s" % (EUserId, str(e)))
 
