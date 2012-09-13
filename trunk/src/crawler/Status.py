@@ -44,7 +44,7 @@ class Status(WeiboClient):
 
         try:
             conn = util.get_crawler_connection()
-            dao = StatusDao
+            dao = StatusDao(conn)
             dao.insert_statuses(iJsonData)
             
             for lInterator in iJsonData:
@@ -61,7 +61,7 @@ class Status(WeiboClient):
                 
             print('SQL for Status ready.')
             cursor = conn.cursor()
-            cursor.execute(lSQLStatement) 
+            cursor.execute(remove_InvalideChar_utf16(lSQLStatement)) 
             cursor.close()
             conn.commit()
             conn.close()

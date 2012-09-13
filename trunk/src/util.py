@@ -9,6 +9,7 @@ from dateutil import parser
 from calendar import timegm
 from crawler.WeiboClient import WeiboClient
 from crawler.PublicToken import PublicToken
+import types
 
 
 from crawler.conf import *
@@ -30,14 +31,36 @@ def get_crawler_connection():
 def get_weibo_client():
     return WeiboClient(PublicToken.getPublicToken()[0])
 
-def fix_invalid_character(s):
+def remove_InvalideChar_utf16(s):
     high_min = u'\ud800'
     high_max = u'\udbff'
     low_min = u'\udc00'
     low_max = u'\udfff'
-    for i in len(s):
-        if (s[i] >= high_min and s[i] <= high_max) or (s[i] >= low_min and s[i] <= low_max):
-            s[i] = ' '
+    result = ''
+    for i in range(0,len(s)):
+        if not (s[i] >= high_min and s[i] <= high_max) or (s[i] >= low_min and s[i] <= low_max):
+            result += s[i]
+    return result
+def remove_InvalideChar_utf8(s):
+    result = ''
+    ignoreNumber = 0
+    for i in range(0,len(s)):
+        if ignoreNumber != 0:
+            ignoreNumber = ignoreNumber-1
+            continue
+        if s[i] < '\xf0':
+            result += s[i]
+        if s[i] >= '\xf0' and s[i] <'\xf8':
+            ignoreNumber = 4
+        if s[i] >= '\xf8' and s[i] < '\xfc':
+            ignoreNumber = 5
+        if s[i] >= 'x\fc' and s[i] <= '\xfd':
+            ignoreNumver = 6
+    return result
+    
+        
+        
+    
 
 if __name__ == '__main__':
     print parse_weibo_time_string('Wed Sep 12 16:23:00 +0800 2012')
