@@ -25,7 +25,7 @@ class FollowersFollowingV(WeiboClient):
 # for followers's profile
     mSQLStatement_fp = "INSERT INTO WeiboUser (idUser, screen_name, name, province, city, \
             location, description, url, profile_image, domain, gender, avatar_large, \
-            verified, verified_reason, INSERT_TIMESTAMP, LAST_UPDATE_TIMESTAMP) VALUES %s ON DUPLICATE KEY UPDATE idUser=idUser;"
+            verified, verified_reason, INSERT_TIMESTAMP, LAST_UPDATE_TIMESTAMP) VALUES %s ON DUPLICATE KEY UPDATE LAST_UPDATE_TIMESTAMP=current_timestamp;"
 
     mSQLValueStatement_fp = "(%s, '%s', '%s', %s, %s, '%s', '%s', '%s', '%s', '%s', %s, '%s', %s, '%s', \
             current_timestamp, current_timestamp),"
