@@ -69,7 +69,7 @@ class Followers(WeiboClient):
             conn.close()
             print('Store data for Followers to db done.')
         except Exception, e:
-            print 'Error when insert WeiboFollower into Database for uid = %s because of: %s' % (self.mUid, e) 
+            print 'Error when insert Followers into Database for uid = %s because of: %s' % (self.mUid, e) 
     
     #fetch from Weibo and call sendToDB
     def process(self):

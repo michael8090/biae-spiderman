@@ -3,7 +3,6 @@ Created on Sep 11, 2012
 
 @author: yiliu
 '''
-import MySQLdb
 from dateutil import parser
 from calendar import timegm
 from crawler.WeiboClient import WeiboClient
@@ -28,6 +27,15 @@ def get_crawler_connection():
 
 def get_weibo_client():
     return WeiboClient(PublicToken.getPublicToken()[0])
+
+def fix_invalid_character(s):
+    high_min = u'\ud800'
+    high_max = u'\udbff'
+    low_min = u'\udc00'
+    low_max = u'\udfff'
+    for i in len(s):
+        if (s[i] >= high_min and s[i] <= high_max) or (s[i] >= low_min and s[i] <= low_max):
+            s[i] = ' '
 
 if __name__ == '__main__':
     print parse_weibo_time_string('Wed Sep 12 16:23:00 +0800 2012')
