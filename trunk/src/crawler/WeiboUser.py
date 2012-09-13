@@ -3,6 +3,7 @@
 import types
 import MySQLdb
 
+import util
 from conf import *
 from PublicToken import PublicToken
 from WeiboClient import WeiboClient
@@ -28,20 +29,20 @@ class WeiboUser(WeiboClient):
         iUserCountersSQL = self.iUserCountersSQLTemplate % (jUser['id'], jUser['followers_count'], \
                                                             jUser['friends_count'], jUser['statuses_count'])
         try:
-            conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
+            conn = util.get_crawler_connection()
             dao = UserDao(conn)
-            dao.insert_users((jUser, ))
+            dao.insert_users([jUser])
             conn.close()
         except Exception, e:
             print 'Error when insert WeiboUser into Database for uid = %s because of: %s' % (self.mUid, e)
 
         try:
-            conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
+            conn = util.get_crawler_connection()
             cursor = conn.cursor()
             cursor.execute(iUserCountersSQL)
             cursor.close()
             conn.commit()
-            conn.close()  
+            conn.close()
         except Exception, e:
             print 'Error when insert UserCounters into Database for uid = %s because of: %s' % (self.mUid, e)
     

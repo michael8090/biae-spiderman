@@ -7,7 +7,7 @@ class UserDao:
         
     def insert_users(self, j_users):
         # TODO
-        assert(type(j_users) == types.DictType)
+        assert(type(j_users) is types.ListType)
         
         rows = []
         for jUser in j_users:
@@ -24,7 +24,7 @@ class UserDao:
     
     @staticmethod
     def _mapRow(o):
-        return (o['id'], o['screen_name'], o['name'], o['provence'],
+        return (o['id'], o['screen_name'], o['name'], o['province'],
                  o['city'], o['location'], o['description'],
                  o['url'], o['profile_image_url'], o['domain'],
                  (o['gender'].find('f') == -1), o['avatar_large'],

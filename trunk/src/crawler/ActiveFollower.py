@@ -3,6 +3,7 @@
 import types
 import MySQLdb
 
+import util
 from conf import *
 from PublicToken import PublicToken
 from WeiboClient import WeiboClient
@@ -25,7 +26,7 @@ class ActiveFollower(WeiboClient):
         assert(type(jActiveUsers) == types.DictType)
         
         try:
-            conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
+            conn = util.get_crawler_connection()
             dao = UserDao(conn)
             dao.insert_users(jActiveUsers['users'])
             conn.close()
@@ -36,7 +37,7 @@ class ActiveFollower(WeiboClient):
             iRelationshipSQL = self.iRelationshipSQLTemplate % (self.mUid, activeUser['id'])
             
             try:
-                conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
+                conn = util.get_crawler_connection()
                 cursor = conn.cursor()
                 cursor.execute(iRelationshipSQL)
                 cursor.close()
