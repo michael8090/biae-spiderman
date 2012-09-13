@@ -79,7 +79,7 @@ class WeiboClient():
                         req = urllib2.Request(lURL)
                         response = urllib2.urlopen(req,timeout=8)
                         page = response.read()
-                        esponse.close()
+                        response.close()
                         return page
                     except urllib2.URLError, e1:
                         print('retry %d failed in 3 retries'%(i+1))
