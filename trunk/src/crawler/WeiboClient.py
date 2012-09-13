@@ -59,7 +59,8 @@ class WeiboClient():
         for (lKey, lValue) in iParams.iteritems():
             lParamString = "%s=%s&" % (lKey, lValue)
             lURL += lParamString
-        print(lURL[:-1])
+        #print(lURL[:-1])
+        print '.',
         return lURL[:len(lURL) - 1]
     
  #support the sleep and re-try   
