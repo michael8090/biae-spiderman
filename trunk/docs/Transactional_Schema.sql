@@ -5,7 +5,7 @@ CREATE TABLE EUser (
 );
 
 INSERT INTO `EUser` (`idUser`, `screen_name`) VALUES (2202387347, "小米手机"), (2798510462, "360用户特供机"), (2202847500, "HTC_China"), (1645915085, "摩托罗拉"), (1660811367, "诺基亚");
-	
+
 CREATE TABLE WeiboUser (
 	idUser BIGINT NOT NULL,
 	screen_name varchar(512) NULL,
@@ -18,6 +18,11 @@ CREATE TABLE WeiboUser (
 	profile_image varchar(512) NULL,
 	domain varchar(512) NULL,
 	gender Tinyint NULL, -- M:1, F:2, Null:0
+	followers_count BIGINT NULL,                    -- added
+	friends_count BIGINT NULL,                      -- added
+	statuses_count BIGINT NULL,                     -- added
+	favourites_count BIGINT NULL,                   -- added
+	created_at TIMESTAMP NULL,                      -- added
 	avatar_large varchar(512) NULL,
 	verified Boolean DEFAULT False,
 	verified_reason Varchar(1024) DEFAULT NULL,
@@ -39,7 +44,6 @@ CREATE TABLE UserCounters(
 	PRIMARY KEY(idUser, INSERT_TIMESTAMP)
 );
 
-
 CREATE TABLE status_comment(
 	comment_id BIGINT NOT NULL,
 	commented_status_id BIGINT NOT NULL,
@@ -56,7 +60,6 @@ CREATE TABLE status_comment(
 	PRIMARY KEY (comment_id), 
 	INDEX (commented_status_id)
 );
-
 
 CREATE TABLE repost(
 	repost_id BIGINT NOT NULL,
@@ -99,6 +102,7 @@ CREATE TABLE Followers(
 	INSERT_TIMESTAMP TIMESTAMP DEFAULT 0,
 	PRIMARY KEY (id_user,id_follower)
 );
+
 CREATE TABLE Status(
 	id_status BIGINT NOT NULL,
 	create_time TIMESTAMP DEFAULT 0,
