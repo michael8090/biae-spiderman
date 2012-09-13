@@ -1,7 +1,8 @@
 '''WeiboUser's methods
 '''
-import types
+
 import MySQLdb
+import types
 
 import util
 from conf import *
