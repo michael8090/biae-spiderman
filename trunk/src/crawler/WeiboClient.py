@@ -59,8 +59,8 @@ class WeiboClient():
         for (lKey, lValue) in iParams.iteritems():
             lParamString = "%s=%s&" % (lKey, lValue)
             lURL += lParamString
-        #print(lURL[:-1])
-        print '.',
+        print(lURL[:-1])
+        #print '.',
         return lURL[:len(lURL) - 1]
     
  #support the sleep and re-try   
@@ -94,16 +94,19 @@ class WeiboClient():
         if self.mPagingAPIs[iAPI] == 'cursor':
             iParams['cursor'] = 0
             oJsonResult = []
+            current_cursor = 0
             while True:
                 lURL = self._getAPICallURL(iAPI, iParams)
                 try:
                     page = self._getPage(lURL) 
                     lJsonResult = json.loads(page)
                     oJsonResult += lJsonResult[self.mAPIDataFields[iAPI]]
+                    current_cursor = iParams['cursor']
                     lNextCursor = lJsonResult['next_cursor']
-                    if lNextCursor == 0:
+                    if lNextCursor == 0 or lNextCursor <= current_cursor:
                         return oJsonResult
                     iParams['cursor'] = lNextCursor
+                    
                 except urllib2.HTTPError, e:
                     print ('Page: \n\tError: The server couldn\'t fulfill the request. Error code: %s' % (str(e)))
         elif self.mPagingAPIs[iAPI] == 'page':
@@ -119,7 +122,7 @@ class WeiboClient():
                     oJsonResult += lJsonResult[self.mAPIDataFields[iAPI]]
                     totalNumber = lJsonResult['total_number']
                     currentPage = iParams['page']
-                    if currentPage*50 >= totalNumber:
+                    if currentPage*50 >= totalNumber or currentPage>100:
                         return oJsonResult
                     iParams['page'] = currentPage+1
                 except urllib2.HTTPError, e:

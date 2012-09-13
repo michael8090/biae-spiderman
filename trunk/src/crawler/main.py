@@ -25,19 +25,21 @@ if __name__ == '__main__':
             weiboUser.process()
         except Exception, e:
             print ("Error: Cannot crawl data for EUser ID=%s because of: %s" % (EUserId, str(e)))
-
+        print('weibouser done.')
+        
         #for each WeiboUser ID, crawl its followers and their Profiles:
         try:
             Followers(EUserId).process()
         except Exception, e:
             print ("Error: Cannot crawl follower data for EUser ID=%s because of: %s" % (EUserId, str(e)))
-     
+        print('followers done.')
+        
         #for each WeiboUser ID, crawl its Status and their comments and reposts:
         try:
             Status(EUserId).process()
         except Exception, e:
             print ("Error: Cannot crawl Status data for EUser ID=%s because of: %s" % (EUserId, str(e)))        
-            
+        print('Status done.')
         #for each WeiboUser ID, crawl its ActiveFollowers and their following list(Only V stored in DB):    
         try:
             activefollowers = ActiveFollower(EUserId)
@@ -50,6 +52,7 @@ if __name__ == '__main__':
                     print ("Error: Cannot crawl following list for activeUser ID=%s because of: %s" % (auser['id'], str(e)))
         except Exception, e:
             print ("Error: Cannot crawl ActiveFollower for EUser ID=%s because of: %s" % (EUserId, str(e)))
+        print('ActiveFollower done.')
 
     try:
         Tag().process()
