@@ -52,7 +52,7 @@ class Followers(WeiboClient):
         try:
             conn = util.get_crawler_connection()
             cursor = conn.cursor()
-            cursor.execute(util.remove_InvalideChar_utf16(lSQLStatement))
+            cursor.execute(lSQLStatement)
             cursor.close()
             conn.commit()
             conn.close()

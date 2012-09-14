@@ -5,6 +5,7 @@ Created on Sep 12, 2012
 '''
 import MySQLdb
 import types
+import util
 
 from util import parse_weibo_time_string, parse_long
 
@@ -47,6 +48,9 @@ class StatusDao:
         
     @staticmethod
     def _mapRow(o):
+        for v in o.values():
+            if(type(v)) is types.StringTypes:
+                v = util.remove_InvalideChar_utf16(v)
         return (o['id'], parse_weibo_time_string(o['created_at']), o['text'],
                 o['source'], o['favorited'], o['truncated'],
                 parse_long(o['in_reply_to_status_id']),

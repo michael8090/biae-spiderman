@@ -1,5 +1,5 @@
 import types
-
+import util
 from util import parse_weibo_time_string
 
 class UserDao:
@@ -26,6 +26,9 @@ class UserDao:
     
     @staticmethod
     def _mapRow(o):
+        for v in o.values():
+            if(type(v)) is types.StringTypes:
+                v = util.remove_InvalideChar_utf16(v)
         if o['gender'].find('m') != -1:
             o['gender'] = 1
         else:
