@@ -51,11 +51,32 @@ def remove_InvalideChar_utf8(s):
         if s[i] < '\xf0':
             result += s[i]
         if s[i] >= '\xf0' and s[i] <'\xf8':
-            ignoreNumber = 4
+            is_invalide = True
+            for j in range(1,4):
+                if not (i+j < len(s) and (s[i+j] >= '\x80' and s[i+j] < '\xc0')):
+                    is_invalide = False
+                    break 
+            if is_invalide:
+                #print('invalid 4 bytes character found')
+                ignoreNumber = 3
         if s[i] >= '\xf8' and s[i] < '\xfc':
-            ignoreNumber = 5
+            is_invalide = True
+            for j in range(1,5):
+                if not (i+j < len(s) and (s[i+j] >= '\x80' and s[i+j] < '\xc0')):
+                    is_invalide = False 
+                    break
+            if is_invalide:
+                #print('invalid 5 bytes character found')
+                ignoreNumber = 4
         if s[i] >= 'x\fc' and s[i] <= '\xfd':
-            ignoreNumver = 6
+            is_invalide = True
+            for j in range(1,6):
+                if not (i+j < len(s) and (s[i+j] >= '\x80' and s[i+j] < '\xc0')):
+                    is_invalide = False 
+                    break
+            if is_invalide:
+                #print('invalid 6 bytes character found')
+                ignoreNumber = 5
     return result
     
         
