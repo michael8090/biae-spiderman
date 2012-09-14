@@ -74,8 +74,8 @@ class WeiboClient():
             response = urllib2.urlopen(req,timeout=8)
             page = response.read()
             response.close()
-            #page = util.remove_InvalideChar_utf8(page)
-            print(chardet.detect(page))
+            page = util.remove_InvalideChar_utf8(page)
+            #print(chardet.detect(page))
             #print(page)
             return page
         except urllib2.URLError, e:
@@ -87,8 +87,8 @@ class WeiboClient():
                         response = urllib2.urlopen(req,timeout=8)
                         page = response.read()
                         response.close()
-                        print(chardet.detect(page))
-                        #page = util.remove_InvalideChar_utf8(page)
+                        #print(chardet.detect(page))
+                        page = util.remove_InvalideChar_utf8(page)
                         #print(page)
                         return page
                     except urllib2.URLError, e1:
