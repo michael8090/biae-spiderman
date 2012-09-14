@@ -55,6 +55,10 @@ class CommentDao(object):
         reply_comment = o.get('reply_comment')
         reply_comment_id = reply_comment['id'] if not reply_comment is None else 0
         
+        for v in o.values():
+            if(type(v)) is types.StringTypes:
+                v = util.remove_InvalideChar_utf16(v)
+        
         return (o['id'], o['status']['id'], o['user']['id'],
                  parse_weibo_time_string(o['created_at']), 
                  o['text'], o['source'], 

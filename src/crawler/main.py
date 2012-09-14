@@ -14,6 +14,7 @@ if __name__ == '__main__':
 
     #get EUser Ids
     EUserIds = EUser.getEUserIds()
+    print EUserIds
     
     for EUserId in EUserIds:
         #for each EUser ID, crawl its Profile:
