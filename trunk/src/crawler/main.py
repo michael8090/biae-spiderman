@@ -41,24 +41,24 @@ if __name__ == '__main__':
     commentDao = CommentDao(conn)
     
     for EUserId in EUserIds:
-        user = userCrawler.getUser(EUserId)
         try:
+            user = userCrawler.getUser(EUserId)
             userDao.insert_users([user])
             userCounterDao.insert_usercounters([user])
         except Exception, e:
             print ("ERROR: Insert EUser fail: %s" % (str(e), ))
         print ("Insert EUser %s done." % (EUserId, ))
         
-        followers = followerCrawler.getFollowers(EUserId)
         try:
+            followers = followerCrawler.getFollowers(EUserId)
             userDao.insert_users(followers)
             followerDao.insert_followers(EUserId, followers, 0)
         except Exception, e:
             print ("ERROR: Insert follower fail: %s" % (str(e), ))
         print ("Insert EUser %s's followers done." % (EUserId, ))
         
-        statuses = statusCrawler.getStatuses(EUserId)
         try:
+            statuses = statusCrawler.getStatuses(EUserId)
             statusDao.insert_statuses(statuses)
             statusCounterDao.insert_statuscounters(statuses)
         except Exception, e:
@@ -66,13 +66,16 @@ if __name__ == '__main__':
         print ("Insert EUser %s's statuses done." % (EUserId, ))
         
         for status in statuses:
-            reposts = repostCrawler.get_reposts_of_status(status['id'])
-            comments = commentCrawler.get_comments_on_status(status['id'])
             try:
+                reposts = repostCrawler.get_reposts_of_status(status['id'])
                 repostDao.insert_reposts(reposts)
+            except Exception, e:
+                print ("ERROR: Insert reposts fail: %s" % (str(e), ))
+            try:
+                comments = commentCrawler.get_comments_on_status(status['id'])
                 commentDao.insert_comments(comments)
             except Exception, e:
-                print ("ERROR: Insert reposts/comments fail: %s" % (str(e), ))
+                print ("ERROR: Insert comments fail: %s" % (str(e), ))
         
         activeFollosers = followerCrawler.getActiveFollowers(EUserId)
         try:
