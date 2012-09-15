@@ -5,7 +5,6 @@ Created on Sep 12, 2012
 '''
 
 import types
-import util
 
 from util import parse_weibo_time_string, parse_long
 
@@ -44,9 +43,6 @@ class RepostDao:
     @staticmethod
     def _mapRow(o):
         assert o.has_key('retweeted_status')
-        for v in o.values():
-            if(type(v)) is types.StringTypes:
-                v = util.remove_InvalideChar_utf16(v)
         return (o['id'], o['retweeted_status']['id'], o['user']['id'],
                  parse_weibo_time_string(o['created_at']), 
                  o['text'], o['source'], o['favorited'], o['truncated'],

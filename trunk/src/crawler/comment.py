@@ -2,8 +2,6 @@
 '''
 import types
 
-from WeiboClient import WeiboClient
-from PublicToken import PublicToken
 import util
 from dao.comment import CommentDao
 

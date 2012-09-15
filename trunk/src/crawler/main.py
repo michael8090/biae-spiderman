@@ -1,72 +1,90 @@
 #! -*- coding: utf-8 -*-
 
-from ActiveFollower import ActiveFollower
-from conf import *
+import util
+from comment import WeiboCommentAPI
+from dao.user import UserDao
+from dao.usercounter import UserCounterDao
+from dao.follower import FollowerDao
+from dao.status import StatusDao
+from dao.statuscounter import StatusCounterDao
+from dao.repost import RepostDao
+from dao.comment import CommentDao
 from EUser import EUser
 from Followers import Followers
-from FollowersFollowing import FollowersFollowingV
+from repost import WeiboRepostAPI
 from Status import Status
 from Tag import Tag
-#from WeiboFollower import WeiboFollower
 from WeiboUser import WeiboUser
 
 if __name__ == '__main__':
 
-    #get EUser Ids
     EUserIds = EUser.getEUserIds()
-    print EUserIds
+    
+    userCrawler = WeiboUser()
+    followerCrawler = Followers()
+    statusCrawler = Status()
+    weiboClient = util.get_weibo_client()
+    repostCrawler = WeiboRepostAPI(weiboClient)
+    commentCrawler = WeiboCommentAPI(weiboClient)
+    
+    try:
+        conn = util.get_crawler_connection()
+    except Exception, e:
+        print ("ERROR: Init conn fail: %s" % (str(e), ))
+        
+    userDao = UserDao(conn)
+    userCounterDao = UserCounterDao(conn)
+    followerDao = FollowerDao(conn)
+    statusDao = StatusDao(conn)
+    statusCounterDao = StatusCounterDao(conn)
+    repostDao = RepostDao(conn)
+    commentDao = CommentDao(conn)
     
     for EUserId in EUserIds:
-        #for each EUser ID, crawl its Profile:
+        user = userCrawler.getUser(EUserId)
         try:
-            WeiboUser(EUserId).process()
+            userDao.insert_users([user])
+            userCounterDao.insert_usercounters([user])
         except Exception, e:
-            print ("Error: Cannot crawl EUser profile for EUser ID=%s because of: %s" % (EUserId, str(e)))
-        print('WeiboUser done.')
+            print ("ERROR: Insert EUser fail: %s" % (str(e), ))
+        print ("Insert EUser %s done." % (EUserId, ))
         
-        #for each EUser ID, crawl its followers and their Profiles:
+        followers = followerCrawler.getFollowers(EUserId)
         try:
-            Followers(EUserId).process()
+            userDao.insert_users(followers)
+            followerDao.insert_followers(EUserId, followers, 0)
         except Exception, e:
-            print ("Error: Cannot crawl follower data for EUser ID=%s because of: %s" % (EUserId, str(e)))
-        print('Followers done.')
+            print ("ERROR: Insert follower fail: %s" % (str(e), ))
+        print ("Insert EUser %s's followers done." % (EUserId, ))
         
-        #for each EUser ID, crawl its Status and their comments and reposts:
+        statuses = statusCrawler.getStatuses(EUserId)
         try:
-            Status(EUserId).process()
+            statusDao.insert_statuses(statuses)
+            statusCounterDao.insert_statuscounters(statuses)
         except Exception, e:
-            print ("Error: Cannot crawl Status data for EUser ID=%s because of: %s" % (EUserId, str(e)))        
-        print('Status done.')
+            print ("ERROR: Insert status fail: %s" % (str(e), ))
+        print ("Insert EUser %s's statuses done." % (EUserId, ))
         
-        #for each WeiboUser ID, crawl its ActiveFollowers and their following list(Only V stored in DB):    
+        for status in statuses:
+            reposts = repostCrawler.get_reposts_of_status(status['id'])
+            comments = commentCrawler.get_comments_on_status(status['id'])
+            try:
+                repostDao.insert_reposts(reposts)
+                commentDao.insert_comments(comments)
+            except Exception, e:
+                print ("ERROR: Insert reposts/comments fail: %s" % (str(e), ))
+        
+        activeFollosers = followerCrawler.getActiveFollowers(EUserId)
         try:
-            activefollowers = ActiveFollower(EUserId)
-            activefollowers.process()
-            activelist = activefollowers.getActiveUsers()
-            for auser in activelist:
-                try:
-                    FollowersFollowingV(auser['id'],1).process()
-                except Exception, e:
-                    print ("Error: Cannot crawl FollowingV list for activeUser ID=%s because of: %s" % (auser['id'], str(e)))
+            userDao.insert_users(followers)
+            followerDao.insert_followers(EUserId, followers, 1)
         except Exception, e:
-            print ("Error: Cannot crawl ActiveFollower for EUser ID=%s because of: %s" % (EUserId, str(e)))
-        print('ActiveFollower done.')
+            print ("ERROR: Insert active follower fail: %s" % (str(e), ))
+        print ("Insert EUser %s's active followers done." % (EUserId, ))
+        
 
     try:
         Tag().process()
     except Exception, e:
         print ("Error: Tag because of: %s" % (str(e), ))
     print('Tag done.')
-    
-##    #for each WeiboUser ID, crawl its followers' IDs:
-##    for lUserID in gUsersVec:
-##        try:
-##            lWeiboFollower = WeiboFollower(lUserID)
-##            lWeiboFollower.process()
-##        except Exception, e:
-##            print ("Error: Cannot crawl data for Weibo User ID=%s because of: %s" % (lUserID, str(e)))
-    
-    #for each WeiboUser ID, crawl its Status:
-#    for lUserID in gUsersVec:
-#        Status(lUserID).process()
-
