@@ -65,14 +65,14 @@ if __name__ == '__main__':
             print ("ERROR: Insert status fail: %s" % (str(e), ))
         print ("Insert EUser %s's statuses done." % (EUserId, ))
         
-#        for status in statuses:
-#            reposts = repostCrawler.get_reposts_of_status(status['id'])
-#            comments = commentCrawler.get_comments_on_status(status['id'])
-#            try:
-#                repostDao.insert_reposts(reposts)
-#                commentDao.insert_comments(comments)
-#            except Exception, e:
-#                print ("ERROR: Insert reposts/comments fail: %s" % (str(e), ))
+        for status in statuses:
+            reposts = repostCrawler.get_reposts_of_status(status['id'])
+            comments = commentCrawler.get_comments_on_status(status['id'])
+            try:
+                repostDao.insert_reposts(reposts)
+                commentDao.insert_comments(comments)
+            except Exception, e:
+                print ("ERROR: Insert reposts/comments fail: %s" % (str(e), ))
         
         activeFollosers = followerCrawler.getActiveFollowers(EUserId)
         try:
