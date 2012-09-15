@@ -45,13 +45,13 @@ def remove_InvalideChar_utf8(s):
     result = ''
     ignoreNumber = 0
     for i in range(0,len(s)):
+        is_invalide = True
         if ignoreNumber != 0:
             ignoreNumber = ignoreNumber-1
             continue
         if s[i] < '\xf0':
             result += s[i]
         if s[i] >= '\xf0' and s[i] <'\xf8':
-            is_invalide = True
             for j in range(1,4):
                 if not (i+j < len(s) and (s[i+j] >= '\x80' and s[i+j] < '\xc0')):
                     is_invalide = False
@@ -59,8 +59,10 @@ def remove_InvalideChar_utf8(s):
             if is_invalide:
                 #print('invalid 4 bytes character found')
                 ignoreNumber = 3
-        if s[i] >= '\xf8' and s[i] < '\xfc':
-            is_invalide = True
+#                continue
+#            else:
+#                result += s[i]
+        elif s[i] >= '\xf8' and s[i] < '\xfc':
             for j in range(1,5):
                 if not (i+j < len(s) and (s[i+j] >= '\x80' and s[i+j] < '\xc0')):
                     is_invalide = False 
@@ -68,8 +70,10 @@ def remove_InvalideChar_utf8(s):
             if is_invalide:
                 #print('invalid 5 bytes character found')
                 ignoreNumber = 4
-        if s[i] >= 'x\fc' and s[i] <= '\xfd':
-            is_invalide = True
+#                continue
+#            else:
+#                result += s[i]
+        elif s[i] >= 'x\fc' and s[i] <= '\xfd':
             for j in range(1,6):
                 if not (i+j < len(s) and (s[i+j] >= '\x80' and s[i+j] < '\xc0')):
                     is_invalide = False 
@@ -77,6 +81,9 @@ def remove_InvalideChar_utf8(s):
             if is_invalide:
                 #print('invalid 6 bytes character found')
                 ignoreNumber = 5
+#                continue
+#            else:
+#                result += s[i]
     return result
     
         

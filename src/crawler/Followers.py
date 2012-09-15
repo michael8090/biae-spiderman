@@ -37,7 +37,7 @@ class Followers(WeiboClient):
         for lInterator in iJsonData:
             lValueStatement += (self.mSQLValueStatement % 
                                 (self.mUid,lInterator['id'],0))
-            lInterator['description'] = util.remove_InvalideChar_utf16(lInterator['description'])
+            #lInterator['description'] = util.remove_InvalideChar_utf16(lInterator['description'])
         lSQLStatement = self.mSQLStatement % (lValueStatement[:-1])
         print('SQL for  Followers ready.')
         

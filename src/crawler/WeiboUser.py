@@ -40,7 +40,8 @@ class WeiboUser(WeiboClient):
         try:
             conn = util.get_crawler_connection()
             cursor = conn.cursor()
-            cursor.execute(util.remove_InvalideChar_utf16(iUserCountersSQL))
+            #cursor.execute(util.remove_InvalideChar_utf16(iUserCountersSQL))
+            cursor.execute(iUserCountersSQL)
             cursor.close()
             conn.commit()
             conn.close()

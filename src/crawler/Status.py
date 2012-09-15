@@ -61,7 +61,8 @@ class Status(WeiboClient):
                 
             print('SQL for Status ready.')
             cursor = conn.cursor()
-            cursor.execute(remove_InvalideChar_utf16(lSQLStatement)) 
+            #cursor.execute(remove_InvalideChar_utf16(lSQLStatement)) 
+            cursor.execute(lSQLStatement) 
             cursor.close()
             conn.commit()
             conn.close()
