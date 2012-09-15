@@ -60,8 +60,10 @@ class FollowersFollowingV(WeiboClient):
         try:
             conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
             cursor = conn.cursor()
-            cursor.execute(remove_InvalideChar_utf16(lSQLStatement))
-            cursor.execute(remove_InvalideChar_utf16(lSQLStatement_fp))
+#            cursor.execute(remove_InvalideChar_utf16(lSQLStatement))
+#            cursor.execute(remove_InvalideChar_utf16(lSQLStatement_fp))
+            cursor.execute(lSQLStatement)
+            cursor.execute(lSQLStatement_fp)
             cursor.close()
             conn.commit()
             conn.close()
