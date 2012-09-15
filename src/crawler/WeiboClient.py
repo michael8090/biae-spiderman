@@ -80,11 +80,11 @@ class WeiboClient():
             return page
         except urllib2.URLError, e:
             if(str(e) == '<urlopen error timed out>'):
-                for i in range(0,3):
+                for i in range(0,11):
                     try:
                         self._controlCallTypeFrequency()
                         req = urllib2.Request(lURL)
-                        response = urllib2.urlopen(req,timeout=8)
+                        response = urllib2.urlopen(req,timeout=30)
                         page = response.read()
                         response.close()
                         #print(chardet.detect(page))
