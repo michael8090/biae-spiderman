@@ -32,7 +32,8 @@ class FollowerDao:
     SQL_INSERT_FOLLOWERS = '''
 INSERT INTO Followers
         (id_user, id_follower, is_ActiveFun, INSERT_TIMESTAMP)
-VALUES (%s, %s, 0, current_timestamp);
+VALUES (%s, %s, 0, current_timestamp)
+ON DUPLICATE KEY UPDATE is_ActiveFun=is_ActiveFun;
 '''.strip()
 
     SQL_INSERT_ACTIVE_FOLLOWERS = '''
