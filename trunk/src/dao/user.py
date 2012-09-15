@@ -25,7 +25,7 @@ class UserDao:
     
     @staticmethod
     def _mapRow(o):
-        if type(o['gender']) is types.StringType:
+        if type(o['gender']) != types.IntType:
             if o['gender'].find('m') != -1:
                 o['gender'] = 1
             else:
