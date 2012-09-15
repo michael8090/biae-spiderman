@@ -112,7 +112,7 @@ class WeiboClient():
                     page = self._getPage(lURL) 
                     lJsonResult = json.loads(page)
                     oJsonResult += lJsonResult[self.mAPIDataFields[iAPI]]
-                    current_cursor = iParams['previous_cursor']
+                    current_cursor = iParams['cursor']
                     lNextCursor = lJsonResult['next_cursor']
                     total_number = lJsonResult['total_number']
                     if current_cursor > total_number or current_cursor > 4999:
