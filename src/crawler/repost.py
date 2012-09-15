@@ -1,6 +1,5 @@
 '''Reposts crawl
 '''
-import types
 
 from dao.repost import RepostDao
 import util

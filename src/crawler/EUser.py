@@ -1,7 +1,7 @@
 '''Method to fetch EUser Ids from database
 '''
-import MySQLdb
-from conf import *
+
+import util
 
 gEUserIds = []
 
@@ -20,7 +20,7 @@ class EUser():
     def _loadEUserIdsFromDB(self):
         lSQLStatement = "SELECT  idUser from EUser;"
         try:
-            conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
+            conn = util.get_crawler_connection()
             cursor = conn.cursor()
             cursor.execute(lSQLStatement) 
             result = cursor.fetchall()
@@ -28,5 +28,5 @@ class EUser():
             conn.commit()
             conn.close()
         except Exception, e:
-            print 'Error when load public token from Database for team %s because of: %s' % (gTeamID, e) 
+            print ("ERROR: Load EUser fail: %s" % (str(e), ))
         return result;

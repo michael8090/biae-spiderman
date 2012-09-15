@@ -1,5 +1,5 @@
 import types
-import util
+
 from util import parse_weibo_time_string
 
 class UserDao:
@@ -8,7 +8,6 @@ class UserDao:
         self._conn = conn;
         
     def insert_users(self, j_users):
-        # TODO
         assert(type(j_users) is types.ListType)
         
         rows = []
@@ -26,9 +25,6 @@ class UserDao:
     
     @staticmethod
     def _mapRow(o):
-        for v in o.values():
-            if(type(v)) is types.StringTypes:
-                v = util.remove_InvalideChar_utf16(v)
         if o['gender'].find('m') != -1:
             o['gender'] = 1
         else:
@@ -51,8 +47,8 @@ INSERT INTO WeiboUser (idUser, screen_name, name, province, city,
         followers_count, friends_count, statuses_count, favourites_count,
         created_at, avatar_large, verified, verified_reason,
         INSERT_TIMESTAMP, LAST_UPDATE_TIMESTAMP)
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, FROM_UNIXTIME(%s), %s, %s, %s,
-        current_timestamp, current_timestamp)
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+        FROM_UNIXTIME(%s), %s, %s, %s, current_timestamp, current_timestamp)
 ON DUPLICATE KEY UPDATE
         followers_count = VALUES(followers_count),
         friends_count = VALUES(friends_count),
