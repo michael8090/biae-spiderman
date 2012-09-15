@@ -25,13 +25,14 @@ class UserDao:
     
     @staticmethod
     def _mapRow(o):
-        if o['gender'].find('m') != -1:
-            o['gender'] = 1
-        else:
-            if o['gender'].find('f') != -1:
-                o['gender'] = 2
+        if type(o['gender']) is types.StringType:
+            if o['gender'].find('m') != -1:
+                o['gender'] = 1
             else:
-                o['gender'] = 3
+                if o['gender'].find('f') != -1:
+                    o['gender'] = 2
+                else:
+                    o['gender'] = 3
             
         return (o['id'], o['screen_name'], o['name'], o['province'],
                  o['city'], o['location'], o['description'], o['url'],
