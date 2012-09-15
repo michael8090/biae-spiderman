@@ -8,8 +8,7 @@ class Status(WeiboClient):
                 
     API = 'statuses/user_timeline'
     
-    def __init__(self, iUid):
-        self.mUid = iUid
+    def __init__(self):
         WeiboClient.__init__(self, PublicToken.getPublicToken()[0])
 
     def getStatuses(self, userId):
