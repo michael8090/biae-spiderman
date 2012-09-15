@@ -27,5 +27,5 @@ class Followers(WeiboClient):
                   'count': 200,
                   'access_token': self.mPublicToken[1]
                   }
-        activeFollowers = self.fetchUsingAPI(self.API, params)
+        activeFollowers = self.fetchUsingAPI(self.active_API, params)
         return activeFollowers['users']
