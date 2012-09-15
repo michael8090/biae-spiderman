@@ -101,6 +101,8 @@ class WeiboClient():
     #fetch the API with multiple pages and cursor parameters
     def _fetchMultiplePages(self, iAPI, iParams):
         if self.mPagingAPIs[iAPI] == 'cursor':
+            if not iParams.has_key('count'):
+                iParams['count'] = 200
             iParams['cursor'] = 0
             oJsonResult = []
             current_cursor = 0
@@ -110,11 +112,12 @@ class WeiboClient():
                     page = self._getPage(lURL) 
                     lJsonResult = json.loads(page)
                     oJsonResult += lJsonResult[self.mAPIDataFields[iAPI]]
-                    current_cursor = iParams['cursor']
+                    current_cursor = iParams['previous_cursor']
                     lNextCursor = lJsonResult['next_cursor']
-                    if lNextCursor == 0 or lNextCursor <= current_cursor:
+                    total_number = lJsonResult['total_number']
+                    if current_cursor > total_number or current_cursor > 4999:
                         return oJsonResult
-                    iParams['cursor'] = lNextCursor
+                    iParams['cursor'] = current_cursor + iParams['count']
                     
                 except urllib2.HTTPError, e:
                     print ('Page: \n\tError: The server couldn\'t fulfill the request. Error code: %s' % (str(e)))
