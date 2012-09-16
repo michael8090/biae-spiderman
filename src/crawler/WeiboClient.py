@@ -71,9 +71,9 @@ class WeiboClient():
     def __init__(self, iPublicToken):
         #print iPublicToken
         #print(type(iPublicToken))
-        if type(iPublicToken) == types.TupleType:
-            iPublicToken = [iPublicToken]
-        assert type(iPublicToken) == types.ListType
+#        if type(iPublicToken) == types.TupleType:
+#            iPublicToken = [iPublicToken]
+#        assert type(iPublicToken) == types.ListType
         self.mPublicToken = iPublicToken;
         self.CALL_TIMES_PER_INTERVAL = 5*len(iPublicToken)
         self.PERIOD_INTERVAL_SECONDS = 20
@@ -85,12 +85,13 @@ class WeiboClient():
             lParamString = "%s=%s&" % (lKey, lValue)
             lURL += lParamString
         #print(lURL[:-1])
-        print '.',
         return lURL[:len(lURL) - 1]
     
 #support the sleep and re-try   
     def _getPage(self,lURL):
         lURL +='&access_token='+self.getBalancedToken()
+        print self.currentUsedTokenIndex,
+        #print('%s:%s'%(self.currentUsedTokenIndex,len(self.mPublicToken)))
         try:
             self._controlCallTypeFrequency()
             req = urllib2.Request(lURL)

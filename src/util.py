@@ -29,7 +29,9 @@ def get_crawler_connection():
                                    db=gDBSchema, charset="utf8")
 
 def get_weibo_client():
-    return WeiboClient(PublicToken.getPublicToken())
+    tokens = PublicToken.getPublicToken()
+    #print(tokens)
+    return WeiboClient(tokens)
 
 def remove_InvalideChar_utf16(s):
     high_min = u'\ud800'
