@@ -21,11 +21,11 @@ class RepostDao:
         rows = []
         for jRepost in j_reposts:
             if not jRepost.has_key('user'):
-                print '>< user N/A for status %d repost %d' % (status_id, jRepost['id'])
+                # print '>< user N/A for status %d repost %d' % (status_id, jRepost['id'])
                 continue
 
             if not jRepost.has_key('retweeted_status'):
-                print '>< orgin N/A for status %d repost %d' % (status_id, jRepost['id'])
+                # print '>< orgin N/A for status %d repost %d' % (status_id, jRepost['id'])
                 continue
             
             rows.append(self._mapRow(jRepost))

@@ -30,11 +30,11 @@ class CommentDao(object):
         rows = []
         for jComment in j_comments:
             if not jComment.has_key('user'):
-                print '>< user N/A for status %d repost %d' % (status_id, jComment['id'])
+#                print '>< user N/A for status %d repost %d' % (status_id, jComment['id'])
                 continue
 
             if not jComment.has_key('status'):
-                print '>< orgin N/A for status %d repost %d' % (status_id, jComment['id'])
+#                print '>< orgin N/A for status %d repost %d' % (status_id, jComment['id'])
                 continue
             
             rows.append(self._mapRow(jComment))

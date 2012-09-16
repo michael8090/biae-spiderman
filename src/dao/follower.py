@@ -40,6 +40,6 @@ ON DUPLICATE KEY UPDATE
     SQL_INSERT_ACTIVE_FOLLOWERS = '''
 INSERT INTO Followers
         (id_user, id_follower, is_ActiveFun, INSERT_TIMESTAMP)
-VALUES (%s, %s, 1, current_timestamp)
+VALUES (%s, %s, 1, 0)
 ON DUPLICATE KEY UPDATE is_ActiveFun=1;
 '''.strip()
