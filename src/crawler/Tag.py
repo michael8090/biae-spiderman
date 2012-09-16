@@ -67,7 +67,7 @@ class Tag(WeiboClient):
             iParams = {}
             iParams['uids'] = mUids
             #mPublicToken is a list:['uid', 'access_token']
-            iParams['access_token'] = self.mPublicToken[1]
+            #iParams['access_token'] = self.mPublicToken[1]
             lJsonResult = self.fetchUsingAPI(self.mAPI, iParams)
             if type(lJsonResult) == types.ListType and len(lJsonResult) > 0:
                 self._sendToDB(lJsonResult)

@@ -5,7 +5,6 @@ import json
 import time
 import types
 import util
-import chardet
 
 
 class WeiboClient():
@@ -50,15 +49,39 @@ class WeiboClient():
     mBasicURL = 'https://api.weibo.com/2/%s.json?'
     mPublicToken = [];
     #mTokenUsedTimeList is a map {'token owner uid', [time1, time2, time3...]}
-    mTokenUsedTimeList = {};
+    mTokenUsedTimeList = None;
+    
+    currentUsedTokenIndex = None
+    
+    #token load balance 
+    def getBalancedToken(self):
+        i = self.currentUsedTokenIndex
+        if i == None:
+            i = 0
+        else:
+            i = i+1
+        if i >= len(self.mPublicToken):
+            i = 0
+        self.currentUsedTokenIndex = i
+        return self.mPublicToken[i][1]
+
+        
     
     #only use the first row of public token fetched
     def __init__(self, iPublicToken):
+        #print iPublicToken
+        #print(type(iPublicToken))
+        if type(iPublicToken) == types.TupleType:
+            iPublicToken = [iPublicToken]
+        assert type(iPublicToken) == types.ListType
         self.mPublicToken = iPublicToken;
+        self.CALL_TIMES_PER_INTERVAL = 5*len(iPublicToken)
+        self.PERIOD_INTERVAL_SECONDS = 20
     
     #composite the API name and parameters into a URL
     def _getAPICallURL(self, iAPI, iParams):
         lURL = self.mBasicURL % (iAPI)
+        iParams['access_token'] = self.getBalancedToken()
         for (lKey, lValue) in iParams.iteritems():
             lParamString = "%s=%s&" % (lKey, lValue)
             lURL += lParamString
@@ -66,7 +89,7 @@ class WeiboClient():
         print '.',
         return lURL[:len(lURL) - 1]
     
- #support the sleep and re-try   
+#support the sleep and re-try   
     def _getPage(self,lURL):
         try:
             self._controlCallTypeFrequency()
@@ -113,7 +136,7 @@ class WeiboClient():
                     lJsonResult = json.loads(page)
                     oJsonResult += lJsonResult[self.mAPIDataFields[iAPI]]
                     current_cursor = iParams['cursor']
-                    lNextCursor = lJsonResult['next_cursor']
+                    #lNextCursor = lJsonResult['next_cursor']
                     total_number = lJsonResult['total_number']
                     if current_cursor > total_number or current_cursor > 4999:
                         return oJsonResult
@@ -160,25 +183,26 @@ class WeiboClient():
         while(True):
             lNow = time.time()
             #mPublicToken is a list:['uid', 'access_token']
-            lTokenOwner = self.mPublicToken[0]
+#            lTokenOwner = self.mPublicToken[self.currentUsedTokenIndex][1]
+            #lTokenOwner = 'the_only_owner'
             #the token has never been used before:
-            if not self.mTokenUsedTimeList.has_key(lTokenOwner):
+            if self.mTokenUsedTimeList == None:
                 #initial with empty time list 
-                self.mTokenUsedTimeList[lTokenOwner] = []
+                self.mTokenUsedTimeList = []
             #the token has not been used more than 5 times ever:
-            elif len(self.mTokenUsedTimeList[lTokenOwner]) < self.CALL_TIMES_PER_INTERVAL:
-                self.mTokenUsedTimeList[lTokenOwner].append(lNow)
+            elif len(self.mTokenUsedTimeList) < self.CALL_TIMES_PER_INTERVAL:
+                self.mTokenUsedTimeList.append(lNow)
             else:
-                assert(len(self.mTokenUsedTimeList[lTokenOwner]) == self.CALL_TIMES_PER_INTERVAL)
-                lTimeDiff = lNow - self.mTokenUsedTimeList[lTokenOwner][0]
+                assert(len(self.mTokenUsedTimeList) == self.CALL_TIMES_PER_INTERVAL)
+                lTimeDiff = lNow - self.mTokenUsedTimeList[0]
                 #the token has been used more than 5 times in 20 seconds, need wait here
                 if lTimeDiff <= self.PERIOD_INTERVAL_SECONDS:
                     time.sleep(self.PERIOD_INTERVAL_SECONDS + 1 - lTimeDiff) 
                     continue
                 #the token has not been used more than 5 times in 20 seconds
                 else:
-                    self.mTokenUsedTimeList[lTokenOwner].pop(0)
-                    self.mTokenUsedTimeList[lTokenOwner].append(lNow)
+                    self.mTokenUsedTimeList.pop(0)
+                    self.mTokenUsedTimeList.append(lNow)
             return
     
     #fetch the connection with given API name and parameters
