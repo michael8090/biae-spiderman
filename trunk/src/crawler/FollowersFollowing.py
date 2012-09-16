@@ -76,7 +76,7 @@ class FollowersFollowingV(WeiboClient):
         iParams = {}
         iParams['uid'] = self.mUid
         #mPublicToken is a list:['uid', 'access_token']
-        iParams['access_token'] = self.mPublicToken[1]
+        #iParams['access_token'] = self.mPublicToken[1]
         lJsonResult = self.fetchUsingAPI(self.mAPI, iParams)
         #print(lJsonResult)
         print('Get Json data for FollowersFollowing done.')

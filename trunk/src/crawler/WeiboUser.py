@@ -14,8 +14,8 @@ class WeiboUser(WeiboClient):
     
     def getUser(self, userId):
         params = {
-                  'uid': userId,
-                  'access_token': self.mPublicToken[1]
+                  'uid': userId
+                  #'access_token': self.mPublicToken[1]
                   }
         user = self.fetchUsingAPI(self.API, params)
         return user

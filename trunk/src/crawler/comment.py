@@ -21,7 +21,7 @@ class WeiboCommentAPI:
         api_params = {
                      'id' : status_id,
                      #mPublicToken is a list:['uid', 'access_token']
-                     'access_token' : self._client.mPublicToken[1],
+                     #'access_token' : self._client.mPublicToken[1],
                      'count' : self.PAGE_SIZE
                      }
 
