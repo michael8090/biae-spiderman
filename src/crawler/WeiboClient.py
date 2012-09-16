@@ -81,7 +81,6 @@ class WeiboClient():
     #composite the API name and parameters into a URL
     def _getAPICallURL(self, iAPI, iParams):
         lURL = self.mBasicURL % (iAPI)
-        iParams['access_token'] = self.getBalancedToken()
         for (lKey, lValue) in iParams.iteritems():
             lParamString = "%s=%s&" % (lKey, lValue)
             lURL += lParamString
@@ -91,6 +90,7 @@ class WeiboClient():
     
 #support the sleep and re-try   
     def _getPage(self,lURL):
+        lURL +='&access_token='+self.getBalancedToken()
         try:
             self._controlCallTypeFrequency()
             req = urllib2.Request(lURL)
@@ -132,6 +132,7 @@ class WeiboClient():
             while True:
                 lURL = self._getAPICallURL(iAPI, iParams)
                 try:
+                    #print lURL
                     page = self._getPage(lURL) 
                     lJsonResult = json.loads(page)
                     oJsonResult += lJsonResult[self.mAPIDataFields[iAPI]]
