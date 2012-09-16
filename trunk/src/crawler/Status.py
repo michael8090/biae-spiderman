@@ -9,7 +9,7 @@ class Status(WeiboClient):
     API = 'statuses/user_timeline'
     
     def __init__(self):
-        WeiboClient.__init__(self, PublicToken.getPublicToken()[0])
+        WeiboClient.__init__(self, PublicToken.getPublicToken())
 
     def getStatuses(self, userId):
         params = {

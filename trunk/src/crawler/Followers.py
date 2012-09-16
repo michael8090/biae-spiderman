@@ -10,7 +10,7 @@ class Followers(WeiboClient):
     active_API = 'friendships/followers/active'
     
     def __init__(self):
-        WeiboClient.__init__(self, PublicToken.getPublicToken()[0])
+        WeiboClient.__init__(self, PublicToken.getPublicToken())
     
     def getFollowers(self, userId):
         params = {

@@ -10,7 +10,7 @@ class WeiboUser(WeiboClient):
     
     def __init__(self):
         #only use the first row of public tokens right now, you can handle more if you want
-        WeiboClient.__init__(self, PublicToken.getPublicToken()[0])
+        WeiboClient.__init__(self, PublicToken.getPublicToken())
     
     def getUser(self, userId):
         params = {
