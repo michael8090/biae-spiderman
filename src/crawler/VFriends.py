@@ -66,7 +66,7 @@ class VFriends(WeiboClient):
             cursor.execute(lSQLStatement_fp)
             cursor.close()
             conn.commit()
-            conn.close()
+            conn.close() 
             #print('Store data for Friends to DB done.')
         except Exception, e:
             print 'Error when insert VFriends into Database for uid = %s because of: %s' % (self.mUid, e) 
