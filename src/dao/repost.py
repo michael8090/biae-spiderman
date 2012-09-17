@@ -12,6 +12,20 @@ class RepostDao:
     
     def __init__(self, conn):
         self._conn = conn;
+    
+    def get_max_repost_id(self, statusId):
+        try:
+            conn = self._conn
+            cursor = conn.cursor()
+            cursor.execute(self.SQL_GET_MAX_REPOST_ID % statusId)
+            result = cursor.fetchall()
+            cursor.close()
+            conn.commit()
+        except Exception, e:
+            raise
+        if len(result) == 1:
+            return result[0][0]
+        return 0
         
     def insert_reposts(self, j_reposts):
         assert(type(j_reposts) is types.ListType)
@@ -61,4 +75,8 @@ ON DUPLICATE KEY UPDATE
     reposts_count = VALUES(reposts_count),
     comments_count = VALUES(comments_count);
 '''.strip()
-        
+
+    SQL_GET_MAX_REPOST_ID = '''
+SELECT MAX(repost_id) FROM repost
+WHERE retweeted_status_id = %s;
+'''.strip()

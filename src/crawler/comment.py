@@ -28,7 +28,18 @@ class WeiboCommentAPI:
         j_result = self._client.fetchUsingAPI(self.API, api_params)
         return j_result
    
+    def get_comments(self, status_id, since_id):
+        
+        api_params = {
+                     'id' : status_id,
+                     #mPublicToken is a list:['uid', 'access_token']
+                     #'access_token' : self._client.mPublicToken[1],
+                     'count' : self.PAGE_SIZE,
+                     'since_id' : since_id
+                     }
 
+        j_result = self._client.fetchUsingAPI(self.API, api_params)
+        return j_result
 
 
 if __name__ == '__main__':
