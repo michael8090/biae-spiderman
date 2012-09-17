@@ -105,3 +105,20 @@ def remove_InvalideChar_utf8(s):
 
 if __name__ == '__main__':
     print parse_weibo_time_string('Wed Sep 12 16:23:00 +0800 2012')
+
+
+def wait_for_threads(threads):
+    isRunning = True
+    while isRunning:
+        isRunning = False
+        index = 0
+        for athread in threads:
+            if athread.isAlive():
+                isRunning = True
+                break
+            else:
+                threads.pop(index)
+                index = index -1
+            index = index + 1
+
+

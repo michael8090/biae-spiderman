@@ -151,7 +151,7 @@ class WeiboClient():
             lURL = self._getAPICallURL(iAPI, iParams)
             try:
                 #print lURL
-                page = self._getPage(lURL) 
+                page = self._getPage(lURL)
                 lJsonResult = json.loads(page)
                 oJsonResult += lJsonResult[self.mAPIDataFields[iAPI]]
                 current_cursor = iParams['cursor']
@@ -171,21 +171,9 @@ class WeiboClient():
                 athread = threading.Thread(target = self._getDataWithNewThread,args = (lURL, oJsonResult, iAPI))
                 threads.append(athread)
                 athread.start()
-            #wait till all threads finish    
-            isRunning = True
-            while isRunning:
-                isRunning = False
-                index = 0
-                for athread in threads:
-                    if athread.isAlive():
-                        isRunning = True
-                        break
-                    else:
-                        threads.pop(index)
-                        index = index -1
-                    index = index + 1
-                        
+            #wait till all threads finish
             
+            util.wait_for_threads(threads)
             return oJsonResult
                     
         elif self.mPagingAPIs[iAPI] == 'page':
@@ -216,19 +204,7 @@ class WeiboClient():
                 threads.append(athread)
                 athread.start()
             #wait till all threads finish    
-            isRunning = True
-            while isRunning:
-                isRunning = False
-                index = 0
-                for athread in threads:
-                    if athread.isAlive():
-                        isRunning = True
-                        break
-                    else:
-                        threads.pop(index)
-                        index = index -1
-                    index = index + 1
-            
+            util.wait_for_threads(threads)
             return oJsonResult
 
         return {'error': 'unknown fetch type'}
