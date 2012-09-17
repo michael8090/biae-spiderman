@@ -210,15 +210,11 @@ WHERE INSERT_TIMESTAMP > 0;
 
 
 -- rel_qualified_fan
-DELETE FROM rel_fan;
-INSERT INTO rel_fan (enterprise_id, qualified_user_id)
+DELETE FROM biae.rel_qualified_fan;
+INSERT INTO biae.rel_qualified_fan (enterprise_id, qualified_user_id)
 SELECT
-	fo.id_follower,
-	u.screen_name,
-	u.gender,
-	10000 * u.province + u.city,
-	u.followers_count,
-	u.verified
+  e.idUser,
+  fo.id_follower
 FROM EUser e
 	JOIN followers fo ON fo.id_user = e.idUser
 WHERE fo.is_activefun = 1;
