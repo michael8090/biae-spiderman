@@ -53,6 +53,7 @@ class WeiboClient():
     mTokenUsedTimeList = None;
     
     currentUsedTokenIndex = None
+    lock = None
     
     #token load balance 
     def getBalancedToken(self):
@@ -78,6 +79,7 @@ class WeiboClient():
         self.mPublicToken = iPublicToken;
         self.CALL_TIMES_PER_INTERVAL = 5*len(iPublicToken)
         self.PERIOD_INTERVAL_SECONDS = 20
+        self.lock = threading.Lock()
     
     #composite the API name and parameters into a URL
     def _getAPICallURL(self, iAPI, iParams):
@@ -94,7 +96,9 @@ class WeiboClient():
         print self.currentUsedTokenIndex,
         #print('%s:%s'%(self.currentUsedTokenIndex,len(self.mPublicToken)))
         try:
+            self.lock.acquire()
             self._controlCallTypeFrequency()
+            self.lock.release()
             req = urllib2.Request(lURL)
             response = urllib2.urlopen(req,timeout=8)
             page = response.read()
@@ -107,7 +111,9 @@ class WeiboClient():
             if(str(e) == '<urlopen error timed out>'):
                 for i in range(0,11):
                     try:
+                        self.lock.acquire()
                         self._controlCallTypeFrequency()
+                        self.lock.release()
                         req = urllib2.Request(lURL)
                         response = urllib2.urlopen(req,timeout=30)
                         page = response.read()
