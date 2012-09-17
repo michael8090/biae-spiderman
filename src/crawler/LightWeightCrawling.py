@@ -42,41 +42,41 @@ if __name__ == '__main__':
     commentDao = CommentDao(conn)
     
     for EUserId in EUserIds:
-#        try:
-#            user = userCrawler.getUser(EUserId)
-#            userDao.insert_users([user])
-#            userCounterDao.insert_usercounters([user])
-#        except Exception, e:
-#            print ("ERROR: Insert EUser fail: %s" % (str(e), ))
-#        print ("Insert EUser %s done." % (EUserId, ))
-#        
-#        try:
-#            followers = followerCrawler.getFollowers(EUserId)
-#            userDao.insert_users(followers)
-#            followerDao.insert_followers(EUserId, followers, 0)
-#        except Exception, e:
-#            print ("ERROR: Insert follower fail: %s" % (str(e), ))
-#        print ("Insert EUser %s's followers done." % (EUserId, ))
+        try:
+            user = userCrawler.getUser(EUserId)
+            userDao.insert_users([user])
+            userCounterDao.insert_usercounters([user])
+        except Exception, e:
+            print ("ERROR: Insert EUser fail: %s" % (str(e), ))
+        print ("Insert EUser %s done." % (EUserId, ))
         
         try:
-            statuses = statusCrawler.getStatuses(EUserId)
-            statusDao.insert_statuses(statuses)
-            statusCounterDao.insert_statuscounters(statuses)
+            followers = followerCrawler.getFollowers(EUserId)
+            userDao.insert_users(followers)
+            followerDao.insert_followers(EUserId, followers, 0)
         except Exception, e:
-            print ("ERROR: Insert status fail: %s" % (str(e), ))
-        print ("Insert EUser %s's statuses done." % (EUserId, ))
+            print ("ERROR: Insert follower fail: %s" % (str(e), ))
+        print ("Insert EUser %s's followers done." % (EUserId, ))
+#        
+#        try:
+#            statuses = statusCrawler.getStatuses(EUserId)
+#            statusDao.insert_statuses(statuses)
+#            statusCounterDao.insert_statuscounters(statuses)
+#        except Exception, e:
+#            print ("ERROR: Insert status fail: %s" % (str(e), ))
+#        print ("Insert EUser %s's statuses done." % (EUserId, ))
         
-        for status in statuses:
-            try:
-                reposts = repostCrawler.get_reposts_of_status(status['id'])
-                repostDao.insert_reposts(reposts)
-            except Exception, e:
-                print ("ERROR: Insert reposts fail: %s" % (str(e), ))
-            try:
-                comments = commentCrawler.get_comments_on_status(status['id'])
-                commentDao.insert_comments(comments)
-            except Exception, e:
-                print ("ERROR: Insert comments fail: %s" % (str(e), ))
+#        for status in statuses:
+#            try:
+#                reposts = repostCrawler.get_reposts_of_status(status['id'])
+#                repostDao.insert_reposts(reposts)
+#            except Exception, e:
+#                print ("ERROR: Insert reposts fail: %s" % (str(e), ))
+#            try:
+#                comments = commentCrawler.get_comments_on_status(status['id'])
+#                commentDao.insert_comments(comments)
+#            except Exception, e:
+#                print ("ERROR: Insert comments fail: %s" % (str(e), ))
 #        try:
 #            activeFollowers = followerCrawler.getActiveFollowers(EUserId)
 #            userDao.insert_users(activeFollowers)
@@ -84,16 +84,17 @@ if __name__ == '__main__':
 #        except Exception, e:
 #            print ("ERROR: Insert active follower fail: %s" % (str(e), ))
 #        print ("Insert EUser %s's active followers done." % (EUserId, ))
-#        
+        
+        
 #        for aUser in activeFollowers:
 #            try:
 #                VFriends(aUser['id'],1).process()
 #            except Exception, e:
 #                print ("ERROR: Insert VFriends fail: %s"% (str(e),))
 #            print ("Insert Active Follower %s's VFriends done."%(aUser['id']))
-#                
-#        
-#
+                
+        
+
 #    try:
 #        Tag().process()
 #    except Exception, e:

@@ -14,7 +14,7 @@ def getNULL(s):
     else:
         return s
 
-class FollowersFollowingV(WeiboClient):
+class VFriends(WeiboClient):
     mSQLStatement = "INSERT INTO Followers \
                 (id_user, id_follower, is_ActiveFun,INSERT_TIMESTAMP) \
                 VALUES %s ON DUPLICATE KEY UPDATE id_user=id_user;"
@@ -35,7 +35,7 @@ class FollowersFollowingV(WeiboClient):
     def __init__(self, iUid,isActive):
         self.mUid = iUid
         self.isActive = isActive
-        WeiboClient.__init__(self, PublicToken.getPublicToken()[0])
+        WeiboClient.__init__(self, PublicToken.getPublicToken())
     
     #send json data to database
     def _sendToDB(self, iJsonData):
@@ -56,7 +56,7 @@ class FollowersFollowingV(WeiboClient):
     
         #lSQLStatement = MySQLdb.escape_string(lSQLStatement.encode('utf8','ignore'))
         #print(lSQLStatement)
-        print('SQL for FollowersFollowing ready.')
+        #print('SQL for VFriends ready.')
         try:
             conn = MySQLdb.connect(host=gDBHost, port=gDBPort, user=gDBUser, passwd=gDBPassword, db=gDBSchema, charset="utf8")
             cursor = conn.cursor()
@@ -67,9 +67,9 @@ class FollowersFollowingV(WeiboClient):
             cursor.close()
             conn.commit()
             conn.close()
-            print('Store data for FollowersFollowing to DB done.')
+            #print('Store data for Friends to DB done.')
         except Exception, e:
-            print 'Error when insert FollowersFollowing into Database for uid = %s because of: %s' % (self.mUid, e) 
+            print 'Error when insert VFriends into Database for uid = %s because of: %s' % (self.mUid, e) 
     
     #fetch from Weibo and call sendToDB
     def process(self):
@@ -79,7 +79,7 @@ class FollowersFollowingV(WeiboClient):
         #iParams['access_token'] = self.mPublicToken[1]
         lJsonResult = self.fetchUsingAPI(self.mAPI, iParams)
         #print(lJsonResult)
-        print('Get Json data for FollowersFollowing done.')
+        #print('Get Json data for FollowersFollowing done.')
         if type(lJsonResult) == types.ListType and len(lJsonResult) > 0:
             self._sendToDB(lJsonResult)
 
