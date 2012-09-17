@@ -10,10 +10,19 @@ from calendar import timegm
 from crawler.WeiboClient import WeiboClient
 from crawler.PublicToken import PublicToken
 import types
-
+import sys
+import traceback
 
 from crawler.conf import *
 
+
+def print_full_exception(file = None):
+    if file is None:
+        file = sys.stderr
+    type, error, tb = sys.exc_info()
+    traceback._print(file, 'Traceback (most recent call last):')
+    l = traceback.extract_stack()[:-2] + traceback.extract_tb(tb)
+    traceback.print_list(l)
 
 def parse_weibo_time_string(s):
     dt = parser.parse(s)
