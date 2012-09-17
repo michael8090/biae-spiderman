@@ -16,12 +16,13 @@ import traceback
 from crawler.conf import *
 
 
-def print_full_exception(file = None):
-    if file is None:
-        file = sys.stderr
-    type, error, tb = sys.exc_info()
-    traceback._print(file, 'Traceback (most recent call last):')
+def print_full_exception(output_file = None):
+    if output_file is None:
+        output_file = sys.stderr
+    tb = sys.exc_info()[2]
     l = traceback.extract_stack()[:-2] + traceback.extract_tb(tb)
+
+    traceback._print(output_file, 'Traceback (most recent call last):')
     traceback.print_list(l)
 
 def parse_weibo_time_string(s):
