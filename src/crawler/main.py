@@ -58,22 +58,30 @@ if __name__ == '__main__':
 #            print ("ERROR: Insert follower fail: %s" % (str(e), ))
 #        print ("Insert EUser %s's followers done." % (EUserId, ))
         
+#        try:
+#            statuses = statusCrawler.getStatuses(EUserId)
+#            statusDao.insert_statuses(statuses)
+#            statusCounterDao.insert_statuscounters(statuses)
+#        except Exception, e:
+#            print ("ERROR: Insert status fail: %s" % (str(e), ))
+#        print ("Insert EUser %s's statuses done." % (EUserId, ))
         try:
-            statuses = statusCrawler.getStatuses(EUserId)
-            statusDao.insert_statuses(statuses)
-            statusCounterDao.insert_statuscounters(statuses)
+            cursor = conn.cursor()
+            cursor.execute('select id_status from Status') 
+            statuses = cursor.fetchall()
+            cursor.close()
         except Exception, e:
-            print ("ERROR: Insert status fail: %s" % (str(e), ))
-        print ("Insert EUser %s's statuses done." % (EUserId, ))
+            print ('Error when load Status from DB')
+        print('Load Status from DB done.')
         
         for status in statuses:
             try:
-                reposts = repostCrawler.get_reposts_of_status(status['id'])
+                reposts = repostCrawler.get_reposts_of_status(status[0])
                 repostDao.insert_reposts(reposts)
             except Exception, e:
                 print ("ERROR: Insert reposts fail: %s" % (str(e), ))
             try:
-                comments = commentCrawler.get_comments_on_status(status['id'])
+                comments = commentCrawler.get_comments_on_status(status[0])
                 commentDao.insert_comments(comments)
             except Exception, e:
                 print ("ERROR: Insert comments fail: %s" % (str(e), ))
