@@ -9,13 +9,13 @@ SELECT
 	sc.reposts_count AS repost_count,
 	sc.comments_count AS comment_count
 FROM status_counter sc
-WHERE sc.insert_timestamp IN
-	(
+  JOIN (
 		SELECT
-			MAX(insert_timestamp)
+			id_status,
+      MAX(insert_timestamp) AS insert_timestamp
 		FROM status_counter
-		GROUP BY DATE(insert_timestamp)
-	);
+		GROUP BY id_status, DATE(insert_timestamp)
+	) sc1 ON sc.id_status = sc1.id_status AND sc.insert_timestamp = sc1.insert_timestamp;
 
 -- Get last day's count (still {status, day} level).
 CREATE TEMPORARY TABLE biae._sc0_ld
@@ -27,8 +27,8 @@ SELECT
 FROM biae._sc0;
 
 
-	
--- Get count and daily count (still {status, day} level). 
+
+-- Get count and daily count (still {status, day} level).
 CREATE TEMPORARY TABLE biae._sc1
 SELECT
 	sc0.status_id,
@@ -42,7 +42,7 @@ FROM biae._sc0 AS sc0
 ;
 
 
--- Aggregate to {enterprise, day} level.  	
+-- Aggregate to {enterprise, day} level.
 CREATE TEMPORARY TABLE biae._sc2
 SELECT
 	e.idUser AS enterprise_id,
@@ -58,6 +58,7 @@ FROM EUser e
 GROUP BY sc.status_id, sc.create_date;
 
 
+DELETE FROM biae.fact_enterprise_comment_count;
 INSERT INTO biae.fact_enterprise_comment_count
 	(enterprise_id, post_id, comment_date, comment_count, comment_count_today)
 SELECT
@@ -78,7 +79,7 @@ DROP TABLE biae._sc2;
 
 
 
-
+DELETE FROM biae.fact_enterprise_fans;
 INSERT INTO biae.fact_enterprise_fans (
 	enterprise_id,
 	day_date,
@@ -90,22 +91,24 @@ SELECT
 	uc.followers_count,
 	uc.statuses_count
 FROM EUser e
-	JOIN UserCounters uc ON uc.idUser = e.idUser
-WHERE uc.insert_timestamp IN
-	(
-		SELECT MAX(insert_timestamp)
+  JOIN (
+		SELECT
+			idUser,
+      MAX(insert_timestamp) AS insert_timestamp
 		FROM UserCounters
-		GROUP BY DATE(insert_timestamp)
-	);
-
-	
---- lu_city
+		GROUP BY idUser, DATE(insert_timestamp)
+	) uc1 ON e.idUser = uc1.idUser
+	JOIN UserCounters uc ON e.idUser = uc1.idUser AND UC.insert_timestamp = uc1.insert_timestamp;
 
 
---- lu_province
+-- lu_city
 
-	
---- lu_comment
+
+-- lu_province
+
+
+-- lu_comment
+DELETE FROM biae.lu_comment;
 INSERT INTO biae.lu_comment
 SELECT
 	c.comment_id AS comment_id,
@@ -117,9 +120,10 @@ SELECT
 FROM status_comment c
 	JOIN status s ON s.id_status = c.commented_status_id;
 
---- lu_day: no
+-- lu_day: no
 
---- ????? lu_enterprise optional
+-- ????? lu_enterprise optional
+DELETE FROM biae.lu_enterprise;
 INSERT INTO biae.lu_enterprise
 SELECT
 	e.idUser AS enterprise_id,
@@ -127,7 +131,8 @@ SELECT
 FROM EUser e;
 
 
---- ????? lu_event criteria?
+-- ????? lu_event criteria?
+DELETE FROM biae.lu_event;
 INSERT INTO biae.lu_event
 SELECT
 	s.id_user AS event_id,
@@ -139,14 +144,14 @@ FROM status s
 WHERE ?;
 
 
---- lu_gender: no
+-- lu_gender: no
 
---- lu_interest: no
+-- lu_interest: no
 
 
---- lu_month: no
+-- lu_month: no
 
---- lu_post
+-- lu_post
 INSERT INTO biae.lu_post
 SELECT
 	`id_status` AS post_id,
@@ -155,7 +160,7 @@ SELECT
 	id_user AS enterprise_id
 FROM status;
 
---- lu_repost
+-- lu_repost
 INSERT INTO biae.lu_repost
 SELECT
 	r.repost_id,
@@ -167,9 +172,10 @@ SELECT
 FROM repost r JOIN status s ON s.id_status = r.retweeted_status_id;
 
 
---- lu_user
+-- lu_user
+DELETE FROM biae.lu_user;
 INSERT INTO biae.lu_user (user_id, user_name, gender_id, city_id, fans_count, has_v)
-SELECT
+SELECT DISTINCT
 	u.idUser,
 	u.screen_name,
 	u.gender,
@@ -182,18 +188,19 @@ FROM followers fo JOIN euser e ON e.idUser = fo.id_user
 
 
 
---- lu_week: no
+-- lu_week: no
 
---- lu_year: no
+-- lu_year: no
 
 
-
---- rel_fan
-INSERT INTO rel_fan (enterprise_id, user_id, fan_date)
+-- rel_fan
+DELETE FROM biae.rel_fan;
+INSERT INTO biae.rel_fan (enterprise_id, user_id, fan_date, DUMMYC)
 SELECT
 	fo.id_user,
 	fo.id_follower,
-	DATE(fo.insert_timestamp)
+	DATE(fo.insert_timestamp),
+  0
 FROM EUser e
 	JOIN followers fo ON fo.id_user = e.idUser
 WHERE INSERT_TIMESTAMP > 0;
@@ -202,7 +209,7 @@ WHERE INSERT_TIMESTAMP > 0;
 
 
 
---- rel_qualified_fan
+-- rel_qualified_fan
 DELETE FROM rel_fan;
 INSERT INTO rel_fan (enterprise_id, qualified_user_id)
 SELECT
@@ -217,7 +224,7 @@ FROM EUser e
 WHERE fo.is_activefun = 1;
 
 
---- lu_qualified_user
+-- lu_qualified_user
 INSERT INTO lu_qualified_user (qualified_user_id, user_name, gender_id, city_id, fans_count, has_v)
 SELECT
 	u.idUser,
@@ -232,7 +239,7 @@ WHERE u.idUser IN (SELECT DISTINCT qualified_user_id FROM rel_fan);
 
 
 
---- rel_user_interest
+-- rel_user_interest
 CREATE TABLE Tags (
 	idUser BIGINT NOT NULL,
 	tagId BIGINT NOT NULL,
@@ -246,7 +253,7 @@ CREATE TABLE Tags (
 
 
 CREATE TABLE biae._user_interest
-SELECT 
+SELECT
 	idUser AS user_id,
 	interest_id,
 	COUNT(*) AS times
@@ -255,7 +262,7 @@ FROM tags t
 
 
 INSERT INTO biae.rel_user_interest (user_id, interest_id)
-SELECT 
+SELECT
 	ui1.user_id,
 	ui1.interest_id
 FROM biae._user_interest ui1
@@ -268,6 +275,3 @@ ORDER BY ui1.user_id, ui1.times DESC;
 DROP TABLE biae._user_interest;
 
 COMMIT;
-
-
-
