@@ -76,11 +76,10 @@ if __name__ == '__main__':
                 commentDao.insert_comments(comments)
             except Exception, e:
                 print ("ERROR: Insert comments fail: %s" % (str(e), ))
-        
-        activeFollosers = followerCrawler.getActiveFollowers(EUserId)
         try:
-            userDao.insert_users(followers)
-            followerDao.insert_followers(EUserId, followers, 1)
+            activeFollowers = followerCrawler.getActiveFollowers(EUserId)
+            userDao.insert_users(activeFollowers)
+            followerDao.insert_followers(EUserId, activeFollowers, 1)
         except Exception, e:
             print ("ERROR: Insert active follower fail: %s" % (str(e), ))
         print ("Insert EUser %s's active followers done." % (EUserId, ))
