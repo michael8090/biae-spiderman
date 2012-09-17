@@ -16,12 +16,13 @@ import traceback
 from crawler.conf import *
 
 
-def print_full_exception(output_file = None):
-    if output_file is None:
-        output_file = sys.stderr
-    tb = sys.exc_info()[2]
+def print_full_exception():
+#    if output_file is None:
+    output_file = sys.stderr
+    type, error, tb = sys.exc_info()
+    print type
+    print error
     l = traceback.extract_stack()[:-2] + traceback.extract_tb(tb)
-
     traceback._print(output_file, 'Traceback (most recent call last):')
     traceback.print_list(l)
 
