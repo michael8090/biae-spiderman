@@ -16,8 +16,6 @@ class RepostDao:
     def insert_reposts(self, j_reposts):
         assert(type(j_reposts) is types.ListType)
 
-        status_id = j_reposts[0]['retweeted_status']['id']
-
         rows = []
         for jRepost in j_reposts:
             if not jRepost.has_key('user'):

@@ -25,8 +25,6 @@ class CommentDao(object):
         conn = self._conn
         assert(type(j_comments) == types.ListType)
 
-        status_id = j_comments[0]['status']['id']
-
         rows = []
         for jComment in j_comments:
             if not jComment.has_key('user'):
