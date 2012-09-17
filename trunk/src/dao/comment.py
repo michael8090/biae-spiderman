@@ -21,6 +21,20 @@ class CommentDao(object):
         '''
         self._conn = conn
         
+    def get_max_comment_id(self, statusId):
+        try:
+            conn = self._conn
+            cursor = conn.cursor()
+            cursor.execute(self.SQL_GET_MAX_COMMENT_ID % statusId)
+            result = cursor.fetchall()
+            cursor.close()
+            conn.commit()
+        except Exception, e:
+            raise
+        if len(result) == 1:
+            return result[0][0]
+        return 0
+        
     def insert_comments(self, j_comments):
         conn = self._conn
         assert(type(j_comments) == types.ListType)
@@ -66,3 +80,8 @@ INSERT INTO status_comment (comment_id, commented_status_id, user_id, created_ti
 VALUES (%s, %s, %s, FROM_UNIXTIME(%s), %s, %s, %s, %s, NULL)
 ON DUPLICATE KEY UPDATE comment_id = comment_id;
 """.strip()
+
+    SQL_GET_MAX_COMMENT_ID = '''
+SELECT MAX(comment_id) FROM status_comment
+WHERE commented_status_id = %s;
+'''
