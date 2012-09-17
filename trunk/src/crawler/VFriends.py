@@ -40,9 +40,13 @@ class VFriends(WeiboClient):
     #send json data to database
     def _sendToDB(self, iJsonData):
         assert(type(iJsonData) == types.ListType)
+        #print iJsonData
         lValueStatement = ""
         lValueStatement_fp = ""
         for lInterator in iJsonData:
+#            print lInterator
+            if type(lInterator) != types.DictionaryType:
+                continue
             if(lInterator["verified"]):
                 lValueStatement += (self.mSQLValueStatement % 
                                     (lInterator['id'],self.mUid,self.isActive))
