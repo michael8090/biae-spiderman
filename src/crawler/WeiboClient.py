@@ -5,6 +5,7 @@ import json
 import time
 import types
 import util
+import threading
 
 
 class WeiboClient():
@@ -120,7 +121,16 @@ class WeiboClient():
             raise
         
 
-
+    def _getDataWithNewThread(self,lURL,oJsonResult,iAPI):
+            try:
+                #print lURL
+                page = self._getPage(lURL) 
+                lJsonResult = json.loads(page)
+                oJsonResult.append(lJsonResult[self.mAPIDataFields[iAPI]])
+                
+            except urllib2.HTTPError, e:
+                print ('Page: \n\tError: The server couldn\'t fulfill the request. Error code: %s' % (str(e)))
+        
 
     #fetch the API with multiple pages and cursor parameters
     def _fetchMultiplePages(self, iAPI, iParams):
@@ -130,43 +140,90 @@ class WeiboClient():
             iParams['cursor'] = 0
             oJsonResult = []
             current_cursor = 0
-            while True:
+            
+            #get total number
+            lURL = self._getAPICallURL(iAPI, iParams)
+            try:
+                #print lURL
+                page = self._getPage(lURL) 
+                lJsonResult = json.loads(page)
+                oJsonResult += lJsonResult[self.mAPIDataFields[iAPI]]
+                current_cursor = iParams['cursor']
+                #lNextCursor = lJsonResult['next_cursor']
+                total_number = lJsonResult['total_number']
+                if current_cursor > total_number or current_cursor > 4999:
+                    return oJsonResult
+                iParams['cursor'] = current_cursor + iParams['count']
+                
+            except urllib2.HTTPError, e:
+                print ('Page: \n\tError: The server couldn\'t fulfill the request. Error code: %s' % (str(e)))
+            
+            threads = []    
+            for current_cursor in range(current_cursor,total_number,iParams['count']):
+                iParams['cursor'] = current_cursor
                 lURL = self._getAPICallURL(iAPI, iParams)
-                try:
-                    #print lURL
-                    page = self._getPage(lURL) 
-                    lJsonResult = json.loads(page)
-                    oJsonResult += lJsonResult[self.mAPIDataFields[iAPI]]
-                    current_cursor = iParams['cursor']
-                    #lNextCursor = lJsonResult['next_cursor']
-                    total_number = lJsonResult['total_number']
-                    if current_cursor > total_number or current_cursor > 4999:
-                        return oJsonResult
-                    iParams['cursor'] = current_cursor + iParams['count']
+                athread = threading.Thread(target = self._getDataWithNewThread,args = (lURL, oJsonResult, iAPI))
+                threads.append(athread)
+                athread.start()
+            #wait till all threads finish    
+            isRunning = True
+            while isRunning:
+                isRunning = False
+                index = 0
+                for athread in threads:
+                    if athread.isAlive():
+                        isRunning = True
+                        break
+                    else:
+                        threads.pop(index)
+                        index = index -1
+                    index = index + 1
+                        
+            
+            return oJsonResult
                     
-                except urllib2.HTTPError, e:
-                    print ('Page: \n\tError: The server couldn\'t fulfill the request. Error code: %s' % (str(e)))
         elif self.mPagingAPIs[iAPI] == 'page':
-            #print 'to be continued...'
             iParams['page'] = 1
             if not iParams.has_key('count'):
                 iParams['count'] = 200
             oJsonResult = []
-            while True:
+            
+            #get total number
+            lURL = self._getAPICallURL(iAPI, iParams)
+            try:
+                page = self._getPage(lURL)
+                lJsonResult = json.loads(page)
+                oJsonResult += lJsonResult[self.mAPIDataFields[iAPI]]
+                total_number = lJsonResult['total_number']
+                currentPage = iParams['page']
+                if currentPage*iParams['count'] >= total_number:
+                    return oJsonResult
+                iParams['page'] = currentPage+1
+            except urllib2.HTTPError, e:
+                print ('Page: \n\tError: The server couldn\'t fulfill the request. Error code: %s' % (str(e)))
+            
+            threads = []    
+            for currentPage in range(currentPage,total_number):
+                iParams['page'] = currentPage
                 lURL = self._getAPICallURL(iAPI, iParams)
-                try:
-                    page = self._getPage(lURL)
-                    #print(page)
-                    lJsonResult = json.loads(page)
-                    oJsonResult += lJsonResult[self.mAPIDataFields[iAPI]]
-                    totalNumber = lJsonResult['total_number']
-                    currentPage = iParams['page']
-                    if currentPage*iParams['count'] >= totalNumber:
-                        return oJsonResult
-                    iParams['page'] = currentPage+1
-                except urllib2.HTTPError, e:
-                    print ('Page: \n\tError: The server couldn\'t fulfill the request. Error code: %s' % (str(e)))
-
+                athread = threading.Thread(target = self._getDataWithNewThread,args = (lURL, oJsonResult, iAPI))
+                threads.append(athread)
+                athread.start()
+            #wait till all threads finish    
+            isRunning = True
+            while isRunning:
+                isRunning = False
+                index = 0
+                for athread in threads:
+                    if athread.isAlive():
+                        isRunning = True
+                        break
+                    else:
+                        threads.pop(index)
+                        index = index -1
+                    index = index + 1
+            
+            return oJsonResult
 
         return {'error': 'unknown fetch type'}
     
