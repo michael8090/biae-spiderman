@@ -42,14 +42,17 @@ if __name__ == '__main__':
     repostDao = RepostDao(conn)
     commentDao = CommentDao(conn)
     
+    index = 0
+    totalNumber = len(EUserIds)
     for EUserId in EUserIds:
+        index = index + 1
         try:
             user = userCrawler.getUser(EUserId)
             userDao.insert_users([user])
             userCounterDao.insert_usercounters([user])
         except Exception, e:
             print ("ERROR: Insert EUser fail: %s" % (str(e), ))
-        print ("Insert EUser %s done." % (EUserId, ))
+        print ("%d/%d Insert EUser %s done." % (index,totalNumber,EUserId))
         
         try:
             followers = followerCrawler.getFollowers(EUserId)
@@ -57,13 +60,13 @@ if __name__ == '__main__':
             followerDao.insert_followers(EUserId, followers, 0)
         except Exception, e:
             print ("ERROR: Insert follower fail: %s" % (str(e), ))
-        print ("Insert EUser %s's followers done." % (EUserId, ))
-#        
-#        try:
-#            statuses = statusCrawler.getStatuses(EUserId)
-#            print ('Status Count : %d'%(len(statuses)))
-#            statusDao.insert_statuses(statuses)
-#            statusCounterDao.insert_statuscounters(statuses)
-#        except Exception, e:
-#            print ("ERROR: Insert status fail: %s" % (str(e), ))
-#        print ("Insert EUser %s's statuses done." % (EUserId, ))
+        print ("%d/%d Insert EUser %s's followers done." % (index, totalNumber, EUserId))
+        
+        try:
+            statuses = statusCrawler.getStatuses(EUserId)
+            print ('Status Count : %d'%(len(statuses)))
+            statusDao.insert_statuses(statuses)
+            statusCounterDao.insert_statuscounters(statuses)
+        except Exception, e:
+            print ("ERROR: Insert status fail: %s" % (str(e), ))
+        print ("%d/%d Insert EUser %s's statuses done." % (index, totalNumber, EUserId))
