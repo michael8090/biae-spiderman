@@ -34,5 +34,5 @@ class StatusCounterDao:
     SQL_INSERT_STATUSCOUNTERS = '''
 INSERT INTO Status_Counter
         (id_status,reposts_count,comments_count,INSERT_TIMESTAMP)
-VALUES (%s,%s,%s,current_timestamp);
+VALUES (%s,%s,%s,current_timestamp) on duplicate key update id_status=id_status;
 '''.strip()
