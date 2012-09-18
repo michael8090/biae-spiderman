@@ -12,21 +12,22 @@ from dao.comment import CommentDao
 from EUser import EUser
 from Followers import Followers
 from repost import WeiboRepostAPI
-from Status import Status
 from Tag import Tag
 from WeiboUser import WeiboUser
 from VFriends import VFriends
+from dao.VFriendsDao import VFriendsDao
 
 if __name__ == '__main__':
 
     EUserIds = EUser.getEUserIds()
     
-    userCrawler = WeiboUser()
-    followerCrawler = Followers()
-    statusCrawler = Status()
+
     weiboClient = util.get_weibo_client()
     repostCrawler = WeiboRepostAPI(weiboClient)
     commentCrawler = WeiboCommentAPI(weiboClient)
+    userCrawler = WeiboUser(weiboClient)
+    followerCrawler = Followers(weiboClient)
+    vFriendsCrawler = VFriends(weiboClient)
     
     try:
         conn = util.get_crawler_connection()
@@ -36,10 +37,9 @@ if __name__ == '__main__':
     userDao = UserDao(conn)
     userCounterDao = UserCounterDao(conn)
     followerDao = FollowerDao(conn)
-    statusDao = StatusDao(conn)
-    statusCounterDao = StatusCounterDao(conn)
     repostDao = RepostDao(conn)
     commentDao = CommentDao(conn)
+    vFriendsDao = VFriendsDao(conn)
     
     for EUserId in EUserIds:
         try:
@@ -52,12 +52,13 @@ if __name__ == '__main__':
         
         try:
             for aUser in activeFollowers:
-#                try:
-#                    VFriends(aUser['id'],1).process()
-#                except Exception, e:
-#                    print ("ERROR: Insert VFriends fail: %s"% (str(e),))
-#                print ("Insert Active Follower %s's VFriends done."%(aUser['id']))
-                VFriends(aUser['id'],1).process()
+                try:
+                    #VFriends(aUser['id'],1).process()
+                    vfriends = vFriendsCrawler.getVFriends(aUser['id'])
+                    vFriendsDao.insert_VFriends(aUser['id'], vfriends, 1)
+                    userDao.insert_users(vfriends)
+                except Exception, e:
+                    print ("ERROR: Insert VFriends fail: %s"% (str(e),))
                 print ("Insert Active Follower %s's VFriends done."%(aUser['id']))
         except Exception, e:
             print ("ERROR: Insert VFriends fail: %s"% (str(e),))
