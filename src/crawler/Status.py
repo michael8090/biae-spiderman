@@ -8,8 +8,9 @@ class Status(WeiboClient):
                 
     API = 'statuses/user_timeline'
     
-    def __init__(self):
-        WeiboClient.__init__(self, PublicToken.getPublicToken())
+    def __init__(self, client):
+        #WeiboClient.__init__(self, PublicToken.getPublicToken())
+        self._client = client
 
     def getStatuses(self, userId):
         params = {
@@ -17,5 +18,5 @@ class Status(WeiboClient):
                   'count': 200
                   #'access_token': self.mPublicToken[1]
                   }
-        statuses = self.fetchUsingAPI(self.API, params)
+        statuses = self._client.fetchUsingAPI(self.API, params)
         return statuses
