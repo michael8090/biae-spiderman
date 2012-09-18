@@ -58,6 +58,7 @@ if __name__ == '__main__':
 #                    print ("ERROR: Insert VFriends fail: %s"% (str(e),))
 #                print ("Insert Active Follower %s's VFriends done."%(aUser['id']))
                 VFriends(aUser['id'],1).process()
+                print ("Insert Active Follower %s's VFriends done."%(aUser['id']))
         except Exception, e:
             print ("ERROR: Insert VFriends fail: %s"% (str(e),))
             continue
