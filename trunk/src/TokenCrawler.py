@@ -22,14 +22,14 @@ index = 0
 cursor = conn.cursor()
 cursor.execute('delete from public_token_pool;')
 cursor.close()
-for token in tokens:
+for index in range(0,min(10,len(tokens))):
+    token = tokens[index]
     SQLStatement = '''INSERT INTO `Public_Token_Pool` (`UserID`, `Access_Token`, `TokenStatus`, `TeamID`, `INSERT_TIMESTAMP`, `LAST_UPDATE_TIMESTAMP`) VALUES (%s, '%s', 1, NULL, '0000-00-00 00:00:00', '2012-08-30 07:21:36');
                     '''%(index+19714080000,token)
     cursor = conn.cursor()
     cursor.execute(SQLStatement)
     cursor.close()
     print('token:%s inserted in index:%s'%(token,index))
-    index = index + 1
 
 conn.commit()
 conn.close()

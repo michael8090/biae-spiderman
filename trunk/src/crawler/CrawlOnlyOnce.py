@@ -41,17 +41,23 @@ if __name__ == '__main__':
     commentDao = CommentDao(conn)
     vFriendsDao = VFriendsDao(conn)
     
+    index = 0
+    total = len(EUserIds)
     for EUserId in EUserIds:
+        index = index + 1
         try:
             activeFollowers = followerCrawler.getActiveFollowers(EUserId)
             userDao.insert_users(activeFollowers)
             followerDao.insert_followers(EUserId, activeFollowers, 1)
         except Exception, e:
             print ("ERROR: Insert active follower fail: %s" % (str(e), ))
-        print ("Insert EUser %s's active followers done." % (EUserId, ))
+        print ("%d/%d Insert EUser %s's active followers done." % (index,total,EUserId))
         
         try:
+            j = 0
+            fc = len(activeFollowers)
             for aUser in activeFollowers:
+                j = j + 1
                 try:
                     #VFriends(aUser['id'],1).process()
                     vfriends = vFriendsCrawler.getVFriends(aUser['id'])
@@ -59,11 +65,13 @@ if __name__ == '__main__':
                     userDao.insert_users(vfriends)
                 except Exception, e:
                     print ("ERROR: Insert VFriends fail: %s"% (str(e),))
-                print ("Insert Active Follower %s's VFriends done."%(aUser['id']))
+                print ("%d/%d - %d/%d Insert Active Follower %s's VFriends done."%(index,total,j,fc,aUser['id']))
         except Exception, e:
             print ("ERROR: Insert VFriends fail: %s"% (str(e),))
             continue
-        print ("Insert Active Follower %s's VFriends done."%(aUser['id']))
+        print ("%d/%d Insert Active Follower %s's VFriends done."%(index,total,aUser['id']))
+    
+    print('--------All EUsers done--------')
                 
         
 
