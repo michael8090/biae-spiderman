@@ -18,7 +18,7 @@ class Tag(WeiboClient):
     mAPI = 'tags/tags_batch'
     
     def __init__(self):
-        WeiboClient.__init__(self, PublicToken.getPublicToken()[0])
+        WeiboClient.__init__(self, PublicToken.getPublicToken())
     
     #send json data to database
     def _sendToDB(self, j_reposts):
