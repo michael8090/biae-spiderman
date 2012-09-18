@@ -9,8 +9,9 @@ class Followers(WeiboClient):
     API = 'friendships/followers'
     active_API = 'friendships/followers/active'
     
-    def __init__(self):
-        WeiboClient.__init__(self, PublicToken.getPublicToken())
+    def __init__(self,client):
+        #WeiboClient.__init__(self, PublicToken.getPublicToken())
+        self._client = client
     
     def getFollowers(self, userId):
         params = {
@@ -18,7 +19,7 @@ class Followers(WeiboClient):
                   'count': 200,
                   #'access_token': self.mPublicToken[1]
                   }
-        followers = self.fetchUsingAPI(self.API, params)
+        followers = self._client.fetchUsingAPI(self.API, params)
         return followers
     
     def getActiveFollowers(self, userId):
@@ -28,5 +29,5 @@ class Followers(WeiboClient):
                   #'access_token': self.mPublicToken[1]
                   }
         
-        activeFollowers = self.fetchUsingAPI(self.active_API, params)
+        activeFollowers = self._client.fetchUsingAPI(self.active_API, params)
         return activeFollowers['users']

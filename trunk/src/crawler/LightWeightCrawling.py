@@ -21,12 +21,13 @@ if __name__ == '__main__':
 
     EUserIds = EUser.getEUserIds()
     
-    userCrawler = WeiboUser()
-    followerCrawler = Followers()
-    statusCrawler = Status()
+
     weiboClient = util.get_weibo_client()
     repostCrawler = WeiboRepostAPI(weiboClient)
     commentCrawler = WeiboCommentAPI(weiboClient)
+    userCrawler = WeiboUser(weiboClient)
+    followerCrawler = Followers(weiboClient)
+    statusCrawler = Status(weiboClient)
     
     try:
         conn = util.get_crawler_connection()
