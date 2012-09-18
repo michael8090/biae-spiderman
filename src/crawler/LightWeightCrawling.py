@@ -50,16 +50,17 @@ if __name__ == '__main__':
             print ("ERROR: Insert EUser fail: %s" % (str(e), ))
         print ("Insert EUser %s done." % (EUserId, ))
         
-        try:
-            followers = followerCrawler.getFollowers(EUserId)
-            userDao.insert_users(followers)
-            followerDao.insert_followers(EUserId, followers, 0)
-        except Exception, e:
-            print ("ERROR: Insert follower fail: %s" % (str(e), ))
-        print ("Insert EUser %s's followers done." % (EUserId, ))
+#        try:
+#            followers = followerCrawler.getFollowers(EUserId)
+#            userDao.insert_users(followers)
+#            followerDao.insert_followers(EUserId, followers, 0)
+#        except Exception, e:
+#            print ("ERROR: Insert follower fail: %s" % (str(e), ))
+#        print ("Insert EUser %s's followers done." % (EUserId, ))
         
         try:
             statuses = statusCrawler.getStatuses(EUserId)
+            print ('Status Count : %d'%(len(statuses)))
             statusDao.insert_statuses(statuses)
             statusCounterDao.insert_statuscounters(statuses)
         except Exception, e:

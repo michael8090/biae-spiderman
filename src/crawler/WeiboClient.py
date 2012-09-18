@@ -92,7 +92,9 @@ class WeiboClient():
     
 #support the sleep and re-try   
     def _getPage(self,lURL):
+        self.lock.acquire()
         lURL +='&access_token='+self.getBalancedToken()
+        self.lock.release()
         #print lURL
         print self.currentUsedTokenIndex,
         #print('%s:%s'%(self.currentUsedTokenIndex,len(self.mPublicToken)))
@@ -133,7 +135,11 @@ class WeiboClient():
                 #print lURL
                 page = self._getPage(lURL) 
                 lJsonResult = json.loads(page)
-                oJsonResult.append(lJsonResult[self.mAPIDataFields[iAPI]])
+                resultList = lJsonResult[self.mAPIDataFields[iAPI]]
+                print 'page count:'+str(len(resultList))
+                self.lock.acquire()
+                oJsonResult += resultList
+                self.lock.release()
                 
             except urllib2.HTTPError, e:
                 print ('Page: \n\tError: The server couldn\'t fulfill the request. Error code: %s' % (str(e)))
@@ -142,8 +148,8 @@ class WeiboClient():
     #fetch the API with multiple pages and cursor parameters
     def _fetchMultiplePages(self, iAPI, iParams):
         if self.mPagingAPIs[iAPI] == 'cursor':
-            if not iParams.has_key('count'):
-                iParams['count'] = 200
+            #if not iParams.has_key('count'):
+            iParams['count'] = 20
             iParams['cursor'] = 0
             oJsonResult = []
             current_cursor = 0
@@ -179,8 +185,8 @@ class WeiboClient():
                     
         elif self.mPagingAPIs[iAPI] == 'page':
             iParams['page'] = 1
-            if not iParams.has_key('count'):
-                iParams['count'] = 200
+            #if not iParams.has_key('count'):
+            iParams['count'] = 20
             oJsonResult = []
             
             #get total number
@@ -198,7 +204,7 @@ class WeiboClient():
                 print ('Page: \n\tError: The server couldn\'t fulfill the request. Error code: %s' % (str(e)))
             
             threads = []    
-            for currentPage in range(currentPage,min(total_number,5000/iParams['count'])):
+            for currentPage in range(currentPage,min(total_number/iParams['count'],5000/iParams['count'])):
                 iParams['page'] = currentPage
                 lURL = self._getAPICallURL(iAPI, iParams)
                 athread = threading.Thread(target = self._getDataWithNewThread,args = (lURL, oJsonResult, iAPI))
