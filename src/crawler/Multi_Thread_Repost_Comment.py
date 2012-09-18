@@ -24,12 +24,14 @@ def crawl_repost_and_comment(index,params):
         try:
             reposts = repostCrawler.get_reposts_of_status(status[0])
             repostDao.insert_reposts(reposts)
+            print '.',
         except Exception, e:
             print ("ERROR: Insert reposts fail: %s" % (str(e), ))
             util.print_full_exception()
         try:
             comments = commentCrawler.get_comments_on_status(status[0])
             commentDao.insert_comments(comments)
+            print '.',
         except Exception, e:
             print ("ERROR: Insert comments fail: %s" % (str(e), ))
             util.print_full_exception()
