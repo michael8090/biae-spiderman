@@ -93,7 +93,7 @@ class WeiboClient():
 #support the sleep and re-try   
     def _getPage(self,lURL):
         lURL +='&access_token='+self.getBalancedToken()
-        print lURL
+        #print lURL
         print self.currentUsedTokenIndex,
         #print('%s:%s'%(self.currentUsedTokenIndex,len(self.mPublicToken)))
         try:
