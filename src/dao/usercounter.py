@@ -33,5 +33,5 @@ class UserCounterDao:
     SQL_INSERT_USERCOUNTERS = '''
 INSERT INTO UserCounters (idUser, followers_count, friends_count,
         statuses_count, INSERT_TIMESTAMP, LAST_UPDATE_TIMESTAMP)
-VALUES (%s, %s, %s, %s, current_timestamp, current_timestamp);
+VALUES (%s, %s, %s, %s, current_timestamp, current_timestamp) on duplicate key update idUser=idUser;
 '''.strip()
