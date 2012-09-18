@@ -165,7 +165,7 @@ class WeiboClient():
                 print ('Page: \n\tError: The server couldn\'t fulfill the request. Error code: %s' % (str(e)))
             
             threads = []    
-            for current_cursor in range(current_cursor,total_number,iParams['count']):
+            for current_cursor in range(current_cursor,min(total_number,5000),iParams['count']):
                 iParams['cursor'] = current_cursor
                 lURL = self._getAPICallURL(iAPI, iParams)
                 athread = threading.Thread(target = self._getDataWithNewThread,args = (lURL, oJsonResult, iAPI))
@@ -197,7 +197,7 @@ class WeiboClient():
                 print ('Page: \n\tError: The server couldn\'t fulfill the request. Error code: %s' % (str(e)))
             
             threads = []    
-            for currentPage in range(currentPage,total_number):
+            for currentPage in range(currentPage,min(total_number,5000/iParams['count'])):
                 iParams['page'] = currentPage
                 lURL = self._getAPICallURL(iAPI, iParams)
                 athread = threading.Thread(target = self._getDataWithNewThread,args = (lURL, oJsonResult, iAPI))

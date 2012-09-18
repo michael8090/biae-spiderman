@@ -12,7 +12,8 @@ class UserDao:
         
         rows = []
         for jUser in j_users:
-            rows.append(self._mapRow(jUser))
+            if type(jUser) is types.DictionaryType:
+                rows.append(self._mapRow(jUser))
             
         try:
             conn = self._conn

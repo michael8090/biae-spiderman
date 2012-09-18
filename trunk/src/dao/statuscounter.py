@@ -15,7 +15,8 @@ class StatusCounterDao:
         
         rows = []
         for jStatus in j_statuses:
-            rows.append(self._mapRow(jStatus))
+            if type(jStatus) == types.DictionaryType:
+                rows.append(self._mapRow(jStatus))
             
         try:
             conn = self._conn

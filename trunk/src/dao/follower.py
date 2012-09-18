@@ -15,7 +15,8 @@ class FollowerDao:
         
         rows = []
         for jUser in j_users:
-            rows.append((friendId, jUser['id']))
+            if type(jUser) is types.DictionaryType:
+                rows.append((friendId, jUser['id']))
             
         try:
             conn = self._conn
