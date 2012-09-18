@@ -152,6 +152,7 @@ WHERE ?;
 -- lu_month: no
 
 -- lu_post
+DELETE FROM lu_post;
 INSERT INTO biae.lu_post
 SELECT
 	`id_status` AS post_id,
@@ -161,6 +162,7 @@ SELECT
 FROM status;
 
 -- lu_repost
+DELETE FROM biae.lu_repost;
 INSERT INTO biae.lu_repost
 SELECT
 	r.repost_id,
