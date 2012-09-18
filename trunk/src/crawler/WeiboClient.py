@@ -179,7 +179,7 @@ class WeiboClient():
             print ('Error when trying to get total number in Cursor calls: %s  URL:%s' % (str(e),lURL))
            
         threads = []    
-        for currentPage in range(2,min(ceil(total_number/iParams['count']),ceil(self.maxTotalNumber/iParams['count']))+1):
+        for currentPage in range(2,int(min(ceil(total_number/iParams['count']),ceil(self.maxTotalNumber/iParams['count'])))+1):
             iParams['page'] = currentPage
             lURL = self._getAPICallURL(iAPI, iParams)
             athread = threading.Thread(target = self._fetchData,args = (lURL, oJsonResult, iAPI))
