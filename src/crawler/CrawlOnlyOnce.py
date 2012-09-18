@@ -50,14 +50,17 @@ if __name__ == '__main__':
             print ("ERROR: Insert active follower fail: %s" % (str(e), ))
         print ("Insert EUser %s's active followers done." % (EUserId, ))
         
-        
-        for aUser in activeFollowers:
-            try:
+        try:
+            for aUser in activeFollowers:
+#                try:
+#                    VFriends(aUser['id'],1).process()
+#                except Exception, e:
+#                    print ("ERROR: Insert VFriends fail: %s"% (str(e),))
+#                print ("Insert Active Follower %s's VFriends done."%(aUser['id']))
                 VFriends(aUser['id'],1).process()
-            except Exception, e:
-                print ("ERROR: Insert VFriends fail: %s"% (str(e),))
-            print ("Insert Active Follower %s's VFriends done."%(aUser['id']))
-
+        except Exception, e:
+            print ("ERROR: Insert VFriends fail: %s"% (str(e),))
+            continue
         print ("Insert Active Follower %s's VFriends done."%(aUser['id']))
                 
         
