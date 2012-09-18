@@ -6,6 +6,7 @@ import time
 import types
 import util
 import threading
+import random
 
 
 class WeiboClient():
@@ -57,13 +58,14 @@ class WeiboClient():
     
     #token load balance 
     def getBalancedToken(self):
-        i = self.currentUsedTokenIndex
-        if i == None:
-            i = 0
-        else:
-            i = i+1
-        if i >= len(self.mPublicToken):
-            i = 0
+#        i = self.currentUsedTokenIndex
+#        if i == None:
+#            i = 0
+#        else:
+#            i = i+1
+#        if i >= len(self.mPublicToken):
+#            i = 0
+        i = random.randrange(len(self.mPublicToken))
         self.currentUsedTokenIndex = i
         return self.mPublicToken[i][1]
 
@@ -96,7 +98,8 @@ class WeiboClient():
         lURL +='&access_token='+self.getBalancedToken()
         self.lock.release()
         #print lURL
-        print self.currentUsedTokenIndex,
+        #print self.currentUsedTokenIndex,
+        print '.',
         #print('%s:%s'%(self.currentUsedTokenIndex,len(self.mPublicToken)))
         try:
             self.lock.acquire()
@@ -136,7 +139,7 @@ class WeiboClient():
                 page = self._getPage(lURL) 
                 lJsonResult = json.loads(page)
                 resultList = lJsonResult[self.mAPIDataFields[iAPI]]
-                print 'page count:'+str(len(resultList))
+                #print 'page count:'+str(len(resultList))
                 self.lock.acquire()
                 oJsonResult += resultList
                 self.lock.release()
