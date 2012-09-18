@@ -139,7 +139,7 @@ class WeiboClient():
                 page = self._getPage(lURL) 
                 lJsonResult = json.loads(page)
                 resultList = lJsonResult[self.mAPIDataFields[iAPI]]
-                #print 'page count:'+str(len(resultList))
+                print 'page count:'+str(len(resultList))
                 self.lock.acquire()
                 oJsonResult += resultList
                 self.lock.release()
@@ -152,7 +152,7 @@ class WeiboClient():
     def _fetchMultiplePages(self, iAPI, iParams):
         if self.mPagingAPIs[iAPI] == 'cursor':
             #if not iParams.has_key('count'):
-            iParams['count'] = 20
+            iParams['count'] = 100
             iParams['cursor'] = 0
             oJsonResult = []
             current_cursor = 0
