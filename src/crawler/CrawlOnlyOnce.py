@@ -75,9 +75,9 @@ if __name__ == '__main__':
                 
         
 
-    print('Tags processing...')
-    try:
-        Tag().process()
-    except Exception, e:
-        print ("Error: Tag because of: %s" % (str(e), ))
-    print('Tag done.')
+#    print('Tags processing...')
+#    try:
+#        Tag().process()
+#    except Exception, e:
+#        print ("Error: Tag because of: %s" % (str(e), ))
+#    print('Tag done.')

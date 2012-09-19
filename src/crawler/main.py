@@ -73,19 +73,21 @@ if __name__ == '__main__':
     print('Load Status from DB done.')
     
 
-    
+    index = 0
     for status in statuses:
+        index = index + 1
+        print ("%d/%d"%(index,len(statuses)))
         try:
             reposts = repostCrawler.get_reposts_of_status(status[0])
             repostDao.insert_reposts(reposts)
-            print '.',
+            #print '.',
         except Exception, e:
             print ("ERROR: Insert reposts fail: %s" % (str(e), ))
             util.print_full_exception()
         try:
             comments = commentCrawler.get_comments_on_status(status[0])
             commentDao.insert_comments(comments)
-            print '.',
+            #print '.',
         except Exception, e:
             print ("ERROR: Insert comments fail: %s" % (str(e), ))
             util.print_full_exception()
