@@ -19,4 +19,8 @@ class VFriends(WeiboClient):
                   #'access_token': self.mPublicToken[1]
                   }
         friends = self._client.fetchUsingAPI(self.API, params)
-        return friends
+        vfriends = []
+        for friend in friends:
+            if friend['verified']:
+                vfriends.append(friend)
+        return vfriends

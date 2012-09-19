@@ -106,6 +106,7 @@ class WeiboClient():
 
         for i in range(0,self.retryTimes):
             try:
+                page = None
                 self._controlCallTypeFrequency(lURL)
                 req = urllib2.Request(lURL)
                 response = urllib2.urlopen(req,timeout=self.timeOut)
