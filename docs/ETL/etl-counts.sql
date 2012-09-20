@@ -23,12 +23,20 @@ FROM EUser e
 
 
 -- Get count at {status, day} level.
-CREATE TEMPORARY TABLE biae._sc0
+create table biae._sc0 (
+	status_id bigint not null,
+	create_date timestamp not null,
+	repost_count int not null,
+	comment_count int not null,
+	primary key (status_id, create_date)
+);
+
+insert into biae._sc0
 SELECT
-	sc.id_status AS status_id,
-	DATE(sc.insert_timestamp) AS create_date,
-	sc.reposts_count AS repost_count,
-	sc.comments_count AS comment_count
+	sc.id_status,
+	DATE(sc.insert_timestamp),
+	sc.reposts_count,
+	sc.comments_count
 FROM status_counter sc
   JOIN (
 		SELECT
@@ -39,12 +47,20 @@ FROM status_counter sc
 	) sc1 ON sc.id_status = sc1.id_status AND sc.insert_timestamp = sc1.insert_timestamp;
 
 -- Get last day's count (still {status, day} level).
-CREATE TEMPORARY TABLE biae._sc0_ld
+create table biae._sc0_ld (
+	status_id bigint not null,
+	create_date timestamp not null,
+	ld_repost_count int not null,
+	ld_comment_count int not null,
+	primary key (status_id, create_date)
+);
+
+insert into biae._sc0_ld
 SELECT
 	status_id,
-	ADDDATE(create_date, 1) AS create_date,
-	repost_count AS ld_repost_count,
-	comment_count AS ld_comment_count
+	ADDDATE(create_date, 1),
+	repost_count,
+	comment_count
 FROM biae._sc0;
 
 -- Get count and daily count (still {status, day} level).
@@ -57,7 +73,9 @@ SELECT
 	sc0.repost_count - sc0_ld.ld_repost_count AS repost_count_today,
 	sc0.comment_count - sc0_ld.ld_comment_count AS comment_count_today
 FROM biae._sc0 AS sc0
-	JOIN biae._sc0_ld AS sc0_ld ON sc0.create_date = sc0_ld.create_date
+	JOIN biae._sc0_ld AS sc0_ld ON
+		sc0.status_id = sc0_ld.status_id and
+		sc0.create_date = sc0_ld.create_date
 ;
 
 -- Aggregate to {enterprise, day} level.
@@ -83,6 +101,9 @@ SELECT
 	enterprise_id, status_id, create_date, comment_count, comment_count_today
 FROM biae._sc2;
 
+drop table biae.fact_enterprise_repost_count;
+
+show create table biae__dump3.fact_enterprise_repost_count;
 
 INSERT INTO biae.fact_enterprise_repost_count
 	(enterprise_id, post_id, repost_date, repost_count, repost_count_today)
