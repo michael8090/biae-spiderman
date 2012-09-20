@@ -3,7 +3,7 @@ USE biae_raw;
 
 
 -- lu_post
-DELETE FROM lu_post;
+DELETE FROM biae.lu_post;
 INSERT INTO biae.lu_post
 SELECT
 	`id_status` AS post_id,
