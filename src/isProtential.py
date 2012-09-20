@@ -27,7 +27,7 @@ def isProtential(x,records):
         isProtentialUser.append(None)
         
     if type(records) != types.TupleType or len(records) < coverLen:
-        print 'invalide input length:%s'%len(records)
+        #print 'invalide input length:%s'%len(records)
         #print 'invalide input length',records
         return None
     
@@ -115,7 +115,12 @@ def updateDB(records):
 def process(x):
     users = getUser()
     result = []
+    index = 0
+    total = len(users)
     for user in users:
+        index += 1
+        if index%100 == 0:
+            print("%s/%s"%(index,total))
         user_id = user[0]
         records = getRecord(user_id)
         isP = isProtential(x,records)
@@ -128,8 +133,8 @@ if __name__ == '__main__':
     result = process(1)
     print result
     print ('do you want to store this to DB? Y/N')
-    answer = input
-    if answer == 'y' or answer == 'Y':
-        updateDB(result)
+#    answer = input
+#    if answer == 'y' or answer == 'Y':
+    updateDB(result)
         
     
